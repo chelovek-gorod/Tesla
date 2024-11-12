@@ -20,117 +20,11 @@
         <meta property="og:description" content="Enjoy every moment" /> <!-- not important -->
         <meta property="og:locale" content="en_EN" /> <!-- default: "en_US" -->
 
-        <!-- Yandex Games SDK -->
-        <!--<script src="https://yandex.ru/games/sdk/v2"></script>-->
       <script type="module" crossorigin src="./assets/index-B_pzKbWW.js"></script>
       <link rel="stylesheet" crossorigin href="./assets/index-BXIwOuZh.css">
     </head>
 
     <body>       
-        <!-- start simulation Yandex -->
-        <!---->
-        <script>
-            YaGames = {
-                caption:'simulation Yandex',
-                init() {
-                    return new Promise((resolve, reject) => {
-                        resolve({
-
-                            getStorage() {
-                                return new Promise((resolve, reject) => {
-                                    resolve(localStorage);
-                                })
-                            },
-
-                            getLeaderboards() {
-                                return new Promise((resolve, reject) => {
-                                    resolve({
-
-                                        getLeaderboardEntries() {
-                                            return new Promise((resolve, reject) => {
-
-                                                resolve({
-                                                    data: 'RECORDS TABLE',
-                                                    entries: [
-                                                        { formattedScore: "19764", score: 19764, rank:      1, player: {publicName: ''} },
-                                                        { formattedScore: "19622", score: 19622, rank:      2, player: {publicName: 'no name 1'} },
-                                                        { formattedScore: "19512", score: 19512, rank:      3, player: {publicName: 'no name 1'} },
-                                                        { formattedScore:  "7931", score:  7931, rank:  99999, player: {publicName: ''} },
-                                                        { formattedScore:   "191", score:   191, rank: 100000, player: {publicName: ''} },
-                                                        { formattedScore:   "189", score:   189, rank: 100001, player: {publicName: 'ЩЩШШШШШШШШШШШШ'} },
-                                                        { formattedScore:   "187", score:   187, rank: 100002, player: {publicName: 'no name 3'} },
-                                                        { formattedScore:   "183", score:   183, rank: 100003, player: {publicName: ''} },
-                                                    ],
-                                                    userRank: 100001,
-                                                });
-
-                                                reject({data:'off'})
-
-                                            })
-                                        },
-
-                                        getLeaderboardPlayerEntry(resultsDataName){
-                                            return new Promise((resolve, reject) => {
-
-                                                resolve({
-                                                    data: 'PLAYER RESULT INFO',
-                                                    //
-                                                    score: 1, // число очков текущего игрока в таблицы
-                                                    rank: 12    // место текущего игрока в таблицы
-                                                    //
-                                                });
-
-                                            })
-                                        },
-
-                                        setLeaderboardScore(resultsDataName, score) {
-                                            console.log(`To ${resultsDataName} added score ${score}`)
-                                        }
-
-                                    });
-                                })
-                            },
-
-                            getPlayer() {
-                                return new Promise((resolve, reject) => {
-                                    resolve({
-                                        name: 'MarsGame',
-                                        getMode() {
-                                            return Math.random() < 0.5 ? 'lite' : 'Authorization is true'
-                                            //return 'Authorization is true'
-                                        }
-                                    });
-                                })
-                            },
-
-                            auth : {
-                                openAuthDialog() {
-                                    return new Promise((resolve, reject) => {
-                                        resolve({
-                                            name: 'MarsGame',
-                                            getMode() {
-                                                return Math.random() < 0.5 ? 'lite' : 'Authorization is true'
-                                                //return 'Authorization is true'
-                                            }
-                                        });
-                                    })
-                                }
-                            },
-
-                            adv : {
-                                showFullscreenAdv( callbackObject ) {
-                                    alert('Yandex Fullscreen Banner !!!')
-                                    callbackObject.callbacks.onClose()
-                                }
-                            },
-
-                        });
-                    })
-                }
-            }
-        </script>
-        <!---->
-        <!-- end simulation Yandex -->
-
+        
     </body>
 </html>
