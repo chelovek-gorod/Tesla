@@ -1,0 +1,306 @@
+{
+	"frames": {
+		"0": {
+			"frame": {
+				"x": 0,
+				"y": 0,
+				"w": 384,
+				"h": 668
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 384,
+				"h": 668
+			},
+			"sourceSize": {
+				"w": 384,
+				"h": 668
+			},
+			"anchor": {
+				"x": 0.5,
+				"y": 0.5
+			}
+		},
+		"1": {
+			"frame": {
+				"x": 384,
+				"y": 0,
+				"w": 384,
+				"h": 668
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 384,
+				"h": 668
+			},
+			"sourceSize": {
+				"w": 384,
+				"h": 668
+			},
+			"anchor": {
+				"x": 0.5,
+				"y": 0.5
+			}
+		},
+		"2": {
+			"frame": {
+				"x": 768,
+				"y": 0,
+				"w": 384,
+				"h": 668
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 384,
+				"h": 668
+			},
+			"sourceSize": {
+				"w": 384,
+				"h": 668
+			},
+			"anchor": {
+				"x": 0.5,
+				"y": 0.5
+			}
+		},
+		"3": {
+			"frame": {
+				"x": 1152,
+				"y": 0,
+				"w": 384,
+				"h": 668
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 384,
+				"h": 668
+			},
+			"sourceSize": {
+				"w": 384,
+				"h": 668
+			},
+			"anchor": {
+				"x": 0.5,
+				"y": 0.5
+			}
+		},
+		"4": {
+			"frame": {
+				"x": 0,
+				"y": 668,
+				"w": 384,
+				"h": 668
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 384,
+				"h": 668
+			},
+			"sourceSize": {
+				"w": 384,
+				"h": 668
+			},
+			"anchor": {
+				"x": 0.5,
+				"y": 0.5
+			}
+		},
+		"5": {
+			"frame": {
+				"x": 384,
+				"y": 668,
+				"w": 384,
+				"h": 668
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 384,
+				"h": 668
+			},
+			"sourceSize": {
+				"w": 384,
+				"h": 668
+			},
+			"anchor": {
+				"x": 0.5,
+				"y": 0.5
+			}
+		},
+		"6": {
+			"frame": {
+				"x": 768,
+				"y": 668,
+				"w": 384,
+				"h": 668
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 384,
+				"h": 668
+			},
+			"sourceSize": {
+				"w": 384,
+				"h": 668
+			},
+			"anchor": {
+				"x": 0.5,
+				"y": 0.5
+			}
+		},
+		"7": {
+			"frame": {
+				"x": 1152,
+				"y": 668,
+				"w": 384,
+				"h": 668
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 384,
+				"h": 668
+			},
+			"sourceSize": {
+				"w": 384,
+				"h": 668
+			},
+			"anchor": {
+				"x": 0.5,
+				"y": 0.5
+			}
+		},
+		"8": {
+			"frame": {
+				"x": 0,
+				"y": 1336,
+				"w": 384,
+				"h": 668
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 384,
+				"h": 668
+			},
+			"sourceSize": {
+				"w": 384,
+				"h": 668
+			},
+			"anchor": {
+				"x": 0.5,
+				"y": 0.5
+			}
+		},
+		"9": {
+			"frame": {
+				"x": 384,
+				"y": 1336,
+				"w": 384,
+				"h": 668
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 384,
+				"h": 668
+			},
+			"sourceSize": {
+				"w": 384,
+				"h": 668
+			},
+			"anchor": {
+				"x": 0.5,
+				"y": 0.5
+			}
+		},
+		"10": {
+			"frame": {
+				"x": 768,
+				"y": 1336,
+				"w": 384,
+				"h": 668
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 384,
+				"h": 668
+			},
+			"sourceSize": {
+				"w": 384,
+				"h": 668
+			},
+			"anchor": {
+				"x": 0.5,
+				"y": 0.5
+			}
+		},
+		"11": {
+			"frame": {
+				"x": 1152,
+				"y": 1336,
+				"w": 384,
+				"h": 668
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 384,
+				"h": 668
+			},
+			"sourceSize": {
+				"w": 384,
+				"h": 668
+			},
+			"anchor": {
+				"x": 0.5,
+				"y": 0.5
+			}
+		}
+	},
+	"animations": {
+		"on": [ "0", "1", "2", "3", "4", "5" ],
+        "off": [ "5", "4", "3", "2", "1", "0" ],
+        "active": [ "5", "6", "7", "8", "8", "7", "6", "5" ]
+	},
+	"meta": {
+		"image": "turbo_switch_384x668px_4x3_12frames.png",
+		"format": "RGBA8888",
+		"size": {
+			"w": 1536,
+			"h": 2004
+		},
+		"scale": "1"
+	}
+}
