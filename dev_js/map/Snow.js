@@ -26,6 +26,12 @@ EventHub.on( events.screenResize, (screenData) => {
     maxY = screenData.height
 })
 
+EventHub.on( events.clearSnow, () => {
+    while (snowflakes.length) {
+        reserve.push( snowflakes.pop() )
+    }
+})
+
 class Snowflake {
     constructor() {
         this.init()

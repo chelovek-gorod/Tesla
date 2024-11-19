@@ -1,4 +1,5 @@
 import { AnimatedSprite } from "pixi.js"
+import { EventHub, events } from "../engine/events"
 import { sprites } from "../engine/loader"
 import Smoke from "./Smoke"
 
@@ -15,8 +16,11 @@ class RotorGenerator extends AnimatedSprite {
         this.offsetRate = {x: parentBox.offsetRate.x, y: parentBox.offsetRate.y}
 
         parentBox.parent.addChild(this)
-        parentBox.parent.addChild( new Smoke(parentBox.x, parentBox.y, parentBox.scale.x))
+        parentBox.parent.addChild( new Smoke(parentBox.position, parentBox.scale.x * 2, true))
         parentBox.destroy()
+
+        EventHub.on( events.requestStartTurbo, () => this.play() )
+        EventHub.on( events.responseStopTurbo, () => this.stop() )
     }
 
     updateOnMap(mapScale, mapWidth, mapHeight) {

@@ -15,7 +15,7 @@ class WindGenerator extends AnimatedSprite {
         this.offsetRate = {x: parentBox.offsetRate.x, y: parentBox.offsetRate.y}
 
         parentBox.parent.addChild(this)
-        parentBox.parent.addChild( new Smoke(parentBox.x, parentBox.y, parentBox.scale.x))
+        parentBox.parent.addChild( new Smoke(parentBox.position, parentBox.scale.x * 2, true))
         parentBox.destroy()
     }
 

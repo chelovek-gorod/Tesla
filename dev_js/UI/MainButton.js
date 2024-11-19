@@ -1,8 +1,7 @@
 import { Sprite, Container, Graphics } from "pixi.js"
-import { sprites } from "../engine/loader"
-import { EventHub, events, getClick } from '../engine/events'
-
-import Sparks from "../map/Sparks"
+import { sounds, sprites } from "../engine/loader"
+import { getClick } from '../engine/events'
+import { playSound } from "../engine/sound"
 
 class MainButton extends Container {
     constructor() {
@@ -22,12 +21,12 @@ class MainButton extends Container {
         this.clickArea.on('pointerleave', this.endClick.bind(this) )
     }
 
-    startClick(event){
+    startClick(){
         this.image.texture = sprites.main_button.textures.on
         getClick()
-        new Sparks(event.client.x, event.client.y)
+        playSound(sounds.charge)
     }
-    endClick(event){
+    endClick(){
         this.image.texture = sprites.main_button.textures.off
     }
 }

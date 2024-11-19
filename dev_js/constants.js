@@ -1,4 +1,5 @@
 // UI
+export const levelStateRectRange = 600
 
 export const distanceH = 12
 

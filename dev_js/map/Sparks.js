@@ -1,29 +1,30 @@
-import { sceneAdd, sceneRemove } from '../engine/application'
 import { AnimatedSprite } from "pixi.js"
-import { sprites } from "../engine/loader"
+import { sounds, sprites } from "../engine/loader"
 import { tickerAdd, tickerRemove } from "../engine/application"
+import { playSound } from "../engine/sound"
 
 class Sparks extends AnimatedSprite {
-    constructor(x, y) {
+    constructor(point, scale) {
         super(sprites.sparks.animations.splash)
-        this.scale.set(0.25)
+        this.anchor.set(0.5)
+        this.scale.set(scale * 0.25)
         this.animationSpeed = 0.5
         this.loop = false
         //this.updateAnchor = true
-        this.position.x = x
-        this.position.y = y
+        this.position.x = point.x
+        this.position.y = point.y
         this.play()
         this.onComplete = () => {
             tickerRemove(this)
-            sceneRemove(this)
             this.destroy()
         }
         tickerAdd(this)
-        sceneAdd(this)
+
+        playSound( sounds.se_sparks )
     }
 
     tick(delta) {
-        this.position.y -= delta.deltaTime * 2
+        this.position.y += delta.deltaTime * 2
     }
 }
 

@@ -1,18 +1,21 @@
 import { AnimatedSprite, Container, Graphics } from "pixi.js"
-import { sprites } from "../engine/loader"
-import { EventHub, events, startTurbo } from '../engine/events'
+import { sounds, sprites } from "../engine/loader"
+import { EventHub, events, requestStartTurbo } from '../engine/events'
+import { playSound, playVoice } from "../engine/sound"
 
 class TurboSwitch extends Container {
-    constructor(state) {
+    constructor(state, readyVoice, disabledVoice) {
         super()
-        this.image = new AnimatedSprite(sprites.turbo_switch.animations[state]) // "ready", "active", "on", "off", "idle"
+        this.image = new AnimatedSprite(sprites.turbo_switch.animations[state])
         this.image.animationSpeed = 0.5
         this.image.play()
-        //this.gotoAndStop(0)
+
         this.image.anchor.set(0.5, 1)
         this.addChild(this.image)
 
-        this.state = state
+        this.state = state // "ready", "active", "on", "off", "idle"
+        this.readyVoice = readyVoice
+        this.disabledVoice = disabledVoice
 
         this.clickArea = new Graphics()
         this.clickArea.rect(-64, -160, 128, 128)
@@ -22,19 +25,36 @@ class TurboSwitch extends Container {
         this.clickArea.eventMode = 'static'
         this.clickArea.on('pointerdown', this.getClick.bind(this) )
 
-        EventHub.on( events.stateUpdated, this.updateState.bind(this) )
-        EventHub.on( events.stopTurbo, this.stopTurbo.bind(this) )
+        EventHub.on( events.responseStopTurbo, this.stopTurbo.bind(this) )
     }
 
-    updateState(data) {
-        if (this.state === "idle" && data.isTurboPanelReady) {
-            this.state = 'ready'
-            this.image.textures = sprites.turbo_switch.animations[this.state]
+    updateState(state) {
+        if (state === this.state) return
+
+        this.state = state
+        switch (state) {
+            case "ready":
+                playVoice( this.readyVoice )
+
+                this.image.textures = sprites.turbo_switch.animations[state]
+                this.image.loop = true
+                this.image.gotoAndPlay(0)
+                break
+
+            case "idle":
+                this.image.loop = true
+                this.image.textures = sprites.turbo_switch.animations[this.state]
+                this.image.gotoAndPlay(0)
+                break
+
+            default:
+                console.error(`TurboSwitch GET updateState WITH state: ${state}`)
         }
     }
 
     getClick() {
-        if (this.state !== 'ready') return
+        if (this.state === 'idle') playVoice( this.disabledVoice )
+        if (this.state !== 'ready') return playSound( sounds.sticks )
 
         this.state = "on"
 
@@ -43,13 +63,22 @@ class TurboSwitch extends Container {
         this.image.gotoAndPlay(0)
         this.image.onComplete = () => {
             this.state = 'active'
+            this.playAlarm()
 
             this.image.loop = true
             this.image.textures = sprites.turbo_switch.animations[this.state]
             this.image.gotoAndPlay(0)
         }
 
-        startTurbo()
+        requestStartTurbo()
+        playSound( sounds.upgrade )
+    }
+
+    playAlarm() {
+        if (this.state !== 'active') return
+
+        playSound(sounds.alarm)
+        setTimeout( () => this.playAlarm(), 1000)
     }
 
     stopTurbo() {

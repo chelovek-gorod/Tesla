@@ -3,14 +3,15 @@ import { AnimatedSprite } from "pixi.js"
 import { sprites } from "../engine/loader"
 
 class Smoke extends AnimatedSprite {
-    constructor(x, y, scale) {
+    constructor(point, scale, isCenter = false) {
         super(sprites.smoke.animations.smoke)
-        this.upSpeed = 2
+        this.upSpeed = 2.5 * scale
         this.animationSpeed = 0.5
         this.loop = false
-        this.scale.set(scale * 2)
-        this.position.x = x
-        this.position.y = y
+        this.scale.set(scale)
+        this.anchor.set(0.5, isCenter ? 0.5 : 1)
+        this.position.x = point.x
+        this.position.y = point.y
         this.play()
   
         this.onComplete = () => {

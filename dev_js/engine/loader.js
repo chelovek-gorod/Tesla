@@ -5,6 +5,7 @@ const paths = {
     sprites : './sprites/',
     sounds : './sounds/',
     music : './music/',
+    voices : './voices/',
     fonts : './fonts/',
 }
 
@@ -26,7 +27,7 @@ export const sprites = {
 
     building_box: 'building_box_182x160px.png',
     tesla_tower: 'tesla_tower_214x476px_9x7_61frames.json',
-    lightning_tower: 'lightning_tower_204x564px_2x1_2frames.json',
+    lightning_tower: 'lightning_tower_204x490px_2x1_2frames.json',
     rotor_generator: 'rotor_generator_168x200px_4x4_16frames.json',
     wind_generator: 'wind_generator_256x268px_5x2_10frames.json',
         
@@ -35,7 +36,6 @@ export const sprites = {
     transformer: 'transformer_162x364px.png',
     
     energy: 'energy_160x160px_10x7_70frames.json',
-    small_fire: 'small_fire_38x50px_5x2_10frames.json',
     smoke: 'smoke_192x192px_25frames.json',
     sparks: 'splash_192x192px_20frames.json',
 }
@@ -43,23 +43,42 @@ const spritesNumber = Object.keys(sprites).length
 for (let sprite in sprites) sprites[sprite] = paths.sprites + sprites[sprite]
 
 export const sounds = {
+    upgrade: 'se_upgrade.mp3',
+    alarm: 'se_alarm.mp3',
     charge: 'se_charge.mp3',
-    await: 'se_await.mp3',
-    bell: 'se_bell.mp3',
-    keramic: 'se_keramic.mp3',
-    out: 'se_out.mp3',
-    slash: 'se_slash.mp3',
+    se_sparks: 'se_sparks.mp3',
     sticks: 'se_sticks.mp3',
-    swipe: 'se_swipe.mp3',
 }
 const soundsNumber = Object.keys(sounds).length
 for (let se in sounds) sounds[se] = paths.sounds + sounds[se]
+
+export const voices = {
+    en_available_auto_upgrade: 'voice_en_available_auto_upgrade.mp3',
+    en_available_click_upgrade: 'voice_en_available_click_upgrade.mp3',
+    en_available_turbo: 'voice_en_available_turbo.mp3',
+    en_next_level: 'voice_en_next_level.mp3',
+    en_no_money: 'voice_en_no_money.mp3',
+    en_not_available: 'voice_en_not_available.mp3',
+    en_turbo_upgrade: 'voice_en_turbo_upgrade.mp3',
+
+    ru_available_auto_upgrade: 'voice_ru_available_auto_upgrade.mp3',
+    ru_available_click_upgrade: 'voice_ru_available_click_upgrade.mp3',
+    ru_available_turbo: 'voice_ru_available_turbo.mp3',
+    ru_next_level: 'voice_ru_next_level.mp3',
+    ru_no_money: 'voice_ru_no_money.mp3',
+    ru_not_available: 'voice_ru_not_available.mp3',
+    ru_turbo_upgrade: 'voice_ru_turbo_upgrade.mp3',
+}
+const voicesNumber = Object.keys(voices).length
+for (let vs in voices) voices[vs] = paths.voices + voices[vs]
 
 export const music = {
     bgm0: 'bgm_0.mp3',
     bgm1: 'bgm_1.mp3',
     bgm2: 'bgm_2.mp3',
     bgm3: 'bgm_3.mp3',
+    bgm4: 'bgm_2.mp3',
+    bgm5: 'bgm_3.mp3',
 }
 for (let bgm in music) music[bgm] = paths.music + music[bgm]
 
@@ -73,7 +92,7 @@ for (let font in fonts) fonts[font] = paths.fonts + fonts[font]
 ///////////////////////////////////////////////////////////////////
 
 export function uploadAssets( loadingDoneCallback ) {
-    const assetsNumber = spritesNumber + soundsNumber
+    const assetsNumber = spritesNumber + soundsNumber + voicesNumber
     let loadedAssets = 0
     let progressPerAsset = 100 / assetsNumber
 
@@ -100,6 +119,14 @@ export function uploadAssets( loadingDoneCallback ) {
         Assets.add( {alias: se, src: sounds[se]} )
         Assets.load( se ).then(data => {
             sounds[se] = data
+            loading()
+        })
+    }
+
+    for (let vs in voices) {
+        Assets.add( {alias: vs, src: voices[vs]} )
+        Assets.load( vs ).then(data => {
+            voices[vs] = data
             loading()
         })
     }

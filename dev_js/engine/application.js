@@ -1,6 +1,6 @@
 import { Application } from 'pixi.js'
 import { playMusic, stopMusic } from './sound'
-import { screenResize } from './events'
+import { screenResize, clearSnow } from './events'
 
 const app = new Application()
 
@@ -58,6 +58,7 @@ orientation.addEventListener("change", () => setTimeout(resize, 0))
 window.addEventListener('resize', () => setTimeout(resize, 0))
 
 window.addEventListener('focus', playMusic)
+window.addEventListener('focus', clearSnow)
 window.addEventListener('blur', stopMusic)
 if ('hidden' in document) document.addEventListener('visibilitychange', visibilityOnChange)
 function visibilityOnChange( isHide ) {

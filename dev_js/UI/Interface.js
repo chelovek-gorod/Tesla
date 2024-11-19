@@ -1,7 +1,7 @@
 import { Container, Text, Sprite, Graphics } from "pixi.js"
-import { EventHub, events, requestUpdateClick, requestUpdateAuto } from '../engine/events'
+import { EventHub, events, requestUpgradeClick, requestUpgradeAuto } from '../engine/events'
 import { textStyles } from '../engine/fonts'
-import { sprites } from "../engine/loader"
+import { sprites, voices } from "../engine/loader"
 import LevelPanel from "./LevelPanel"
 import MainButton from "./MainButton"
 import Panel from "./Panel"
@@ -10,9 +10,7 @@ import TurboSwitch from "./TurboSwitch"
 import Wire from "./Wire"
 import { distanceH, distanceV, mainButtonWidth, mainButtonOffsetV,
     turboSwitchOffsetH, levelPanelOffsetH, panelWidth, panelOffsetH, panelOffsetV,
-    wiresSize, wiresOffset, controlSizeH, controlSizeV} from "../constants"
-
-const levelStateRange = 600
+    wiresSize, wiresOffset, controlSizeH, controlSizeV, levelStateRectRange} from "../constants"
 
 class Interface extends Container {
     constructor( screenData, state, isLangRu ) {
@@ -22,6 +20,7 @@ class Interface extends Container {
         this.CTXT = isLangRu ? 'За клик' : 'Per click'
         this.ATXT = isLangRu ? 'В секунду' : 'Per second'
         this.TTXT = isLangRu ? 'ТУРБО' : 'TURBO'
+        this.TtTXT = isLangRu ? 'Секунд' : 'Seconds'
 
         this.state = state
 
@@ -82,7 +81,7 @@ class Interface extends Container {
         this.addChild(this.textScore)
 
         // AD
-        this.topButton = new TopButton()
+        this.topButton = new TopButton( isLangRu ? voices.ru_turbo_upgrade : voices.en_turbo_upgrade)
         this.addChild(this.topButton)
 
         // main button
@@ -91,9 +90,11 @@ class Interface extends Container {
         this.mainButton.position.y = -mainButtonOffsetV
         this.addChild(this.mainButton)
 
-        // click panel               trigger, action, isOn = false
+        // click panel
         const isClickPanelOn = this.state.points >= this.state.addPerClickPrice
-        this.clickPanel = new Panel( 'isClickPanelOn', requestUpdateClick, isClickPanelOn )
+        const readyViceCP = isLangRu ? voices.ru_available_click_upgrade : voices.en_available_click_upgrade
+        const disabledVoiceCP = isLangRu ? voices.ru_no_money : voices.en_no_money
+        this.clickPanel = new Panel( requestUpgradeClick, isClickPanelOn, readyViceCP, disabledVoiceCP )
         this.addChild(this.clickPanel)
 
         this.textClickBonus = new Text({
@@ -116,7 +117,9 @@ class Interface extends Container {
 
         // auto panel
         const isAutoPanelOn = this.state.points >= this.state.addPerSecondPrice
-        this.timePanel = new Panel( 'isAutoPanelOn', requestUpdateAuto, isAutoPanelOn )
+        const readyViceAP = isLangRu ? voices.ru_available_auto_upgrade : voices.en_available_auto_upgrade
+        const disabledVoiceAP = isLangRu ? voices.ru_no_money : voices.en_no_money
+        this.timePanel = new Panel( requestUpgradeAuto, isAutoPanelOn, readyViceAP, disabledVoiceAP )
         this.addChild(this.timePanel)
 
         this.textAutoBonus = new Text({
@@ -139,7 +142,9 @@ class Interface extends Container {
 
         // turbo switch
         const turboState = this.state.points >= this.state.turboPrice ? "ready" : "idle"
-        this.turboSwitch = new TurboSwitch(turboState)
+        const readyViceTP = isLangRu ? voices.ru_available_turbo : voices.en_available_turbo
+        const disabledVoiceTP = isLangRu ? voices.ru_not_available : voices.en_not_available
+        this.turboSwitch = new TurboSwitch(turboState, readyViceTP, disabledVoiceTP)
         this.turboSwitch.position.x = -turboSwitchOffsetH
         this.turboSwitch.position.y = 0
         this.addChild(this.turboSwitch)
@@ -151,6 +156,14 @@ class Interface extends Container {
         this.textTurboTimer.position.x = -turboSwitchOffsetH
         this.textTurboTimer.position.y = -70
         this.addChild(this.textTurboTimer)
+
+        this.textTurboLabel = new Text({
+            text: this.TtTXT,
+            style: textStyles.infoSmallIcons})
+        this.textTurboLabel.anchor.set(0.5, 1)
+        this.textTurboLabel.position.x = -turboSwitchOffsetH
+        this.textTurboLabel.position.y = -50
+        this.addChild(this.textTurboLabel)
         
         // info panel
         this.levelPanel = new LevelPanel()
@@ -208,12 +221,13 @@ class Interface extends Container {
 
         this.screenResize( screenData )
         EventHub.on( events.screenResize, this.screenResize.bind(this) )
-        EventHub.on( events.updatePoints, this.updatePoints.bind(this) )
-        EventHub.on( events.updateClickPanel, this.updateClickPanel.bind(this) )
-        EventHub.on( events.updateAutoPanel, this.updateAutoPanel.bind(this) )
-        EventHub.on( events.updateTurboInfo, this.updateTurboInfo.bind(this) )
-        EventHub.on( events.stopTurbo, this.stopTurbo.bind(this) )
-        EventHub.on( events.updateTurboTimeout, this.updateTurboTimeout.bind(this) )
+        
+        EventHub.on( events.updateUILevel, this.updateLevel.bind(this) )
+        EventHub.on( events.updateUIPoints, this.updatePoints.bind(this) )
+        EventHub.on( events.updateUIClickPanel, this.updateClickPanel.bind(this) )
+        EventHub.on( events.updateUIAutoPanel, this.updateAutoPanel.bind(this) )
+        EventHub.on( events.updateUITurboPanel, this.updateTurboPanel.bind(this) )
+        EventHub.on( events.updateUITurboTimeout, this.updateTurboTimeout.bind(this) )
     }
 
     screenResize(screenData) {
@@ -310,67 +324,92 @@ class Interface extends Container {
         this.textLevelPrice.position.y = this.topDisplay.position.y + 38
         this.textScore.position.y = this.topDisplay.position.y + 72
 
-        this.levelState.clear()
-        this.levelState.roundRect(
-            this.topDisplay.position.x - 293,
-            this.topDisplay.position.y - 12,
-            (levelStateRange / Number(this.state.levelPrice)) * Number(this.state.levelScored),
-            64,
-            12
-        )
-        this.levelState.fill(0xff7777)
+        this.redrawLevelProgressRect()
 
         this.topButton.position.x = screenData.centerX / scale - distanceH
         this.topButton.position.y = -screenData.height / scale
     }
 
-    updatePoints() {
+    redrawLevelProgressRect() {
         this.levelState.clear()
         this.levelState.roundRect(
             this.topDisplay.position.x - 293,
             this.topDisplay.position.y - 12,
-            (levelStateRange / Number(this.state.levelPrice)) * Number(this.state.levelScored),
+            (levelStateRectRange / Number(this.state.levelPrice)) * Number(this.state.levelScored),
             64,
             12
         )
         this.levelState.fill(0xff7777)
+    }
+
+    updateLevel() {
+        this.redrawLevelProgressRect()
 
         // top display
         this.textLevel.text = `${this.LTXT} ${this.state.level.toFormat()}`
         this.textLevelPrice.text = `${this.state.levelScored.toFormat()} / ${this.state.levelPrice.toFormat()}`
-        this.textScore.text = this.state.points.toFormat()
 
         // info panel
         this.textInfoTurboBonus.text = `${this.TTXT} x ${this.state.level.toFormat()}`
     }
+    
+    updatePoints() {
+        this.redrawLevelProgressRect()
 
+        // top display
+        this.textLevelPrice.text = `${this.state.levelScored.toFormat()} / ${this.state.levelPrice.toFormat()}`
+        this.textScore.text = this.state.points.toFormat()
+
+        // check click panel
+        this.clickPanel.activation( this.state.points >= this.state.addPerClickPrice )
+
+        // check auto panel
+        this.timePanel.activation( this.state.points >= this.state.addPerSecondPrice )
+
+        // check turbo panel
+        if (this.turboSwitch.state === "ready" || this.turboSwitch.state === "idle") {
+            const turboState = this.state.points >= this.state.turboPrice ? "ready" : "idle"
+            this.turboSwitch.updateState(turboState)
+        }
+    }
+    
     updateClickPanel() {
+        // updatePoints update this
+        // this.clickPanel.activation( this.state.points >= this.state.addPerClickPrice )
+
         this.textClickBonus.text = '+ ' + this.state.addPerClickNextValue.toFormat()
         this.textClickPrice.text = this.state.addPerClickPrice.toFormat()
         
         // info panel
         this.textInfoClickAdd.text = '+ ' + this.state.addPerClick.toFormat()
     }
-
+    
     updateAutoPanel() {
+        // updatePoints update this
+        // this.timePanel.activation( this.state.points >= this.state.addPerSecondPrice )
+
         this.textAutoBonus.text = '+ ' + this.state.addPerSecondNextValue.toFormat()
         this.textAutoPrice.text = this.state.addPerSecondPrice.toFormat()
         
         // info panel
         this.textInfoAutoAdd.text = '+ ' + this.state.addPerSecond.toFormat()
     }
-
-    updateTurboInfo() {
+    
+    updateTurboPanel() {
+        // updatePoints update this
+        /*
+        if (this.state.addRate === 1n) {
+            const turboState = this.state.points >= this.state.turboPrice ? "ready" : "idle"
+            this.turboSwitch.updateState(turboState)
+        }
+        */
+        
         this.textInfoTurboBonus.text = `${this.TTXT} x ${this.state.level.toFormat()}`
         this.textInfoTurboPrice.text = this.state.turboPrice.toFormat()
     }
-
+    
     updateTurboTimeout() {
         this.textTurboTimer.text = this.state.turboTimeout.toFixed(1)
-    }
-
-    stopTurbo() {
-        this.textTurboTimer.text = this.state.turboSeconds.toFixed(1)
     }
 }
 

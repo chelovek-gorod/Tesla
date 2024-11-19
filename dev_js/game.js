@@ -25,7 +25,7 @@ export function startGame() {
     const state = new State()
 
     sceneAdd( new Background(screenData) )
-    sceneAdd( new ActionScene(screenData) )
+    sceneAdd( new ActionScene(screenData, state) )
     sceneAdd( new Snow() )
     sceneAdd( new Interface(screenData, state, isLangRu) )
     

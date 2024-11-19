@@ -1,8 +1,27 @@
 import { sound } from '@pixi/sound'
-import { music } from './loader'
+import { music, voices } from './loader'
 
 let isSoundOn = true
 let isStartFromRandomMusic = true
+
+const voicesSet = new Set()
+let voiceInstance = null
+export function playVoice( vs ) {
+    if (!isSoundOn) return
+
+    if (voiceInstance) return voicesSet.add(vs)
+
+    voiceInstance = vs.play()
+    voiceInstance.on('end', () => {
+        voiceInstance = null
+
+        if (voicesSet.size === 0) return
+        
+        const nextVoice = voicesSet.values().next().value
+        voicesSet.delete( nextVoice )
+        playVoice( nextVoice )
+    })
+}
 
 export function playSound( se ) {
     if (!isSoundOn) return
@@ -34,7 +53,7 @@ function bgMusicPlay() {
     }
 
     bgMusic = sound.add('bgm', bgMusicList[bgMusicIndex] )
-    bgMusic.play({ volume: 0.5 }).then( instance => instance.on('end', nextBgMusic) )
+    bgMusic.play({ volume: 0.36 }).then( instance => instance.on('end', nextBgMusic) )
 }
 
 function nextBgMusic() {

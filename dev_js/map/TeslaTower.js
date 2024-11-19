@@ -1,7 +1,5 @@
 import { Container, AnimatedSprite, Sprite } from "pixi.js"
 import { sprites } from "../engine/loader"
-import { EventHub, events } from '../engine/events'
-import Smoke from './Smoke'
 
 /*
 214x476px
@@ -35,8 +33,6 @@ class TeslaTower extends Container {
         
         this.sizeScale = sizeScale
         this.offsetRate = {x: offsetRate.x, y: offsetRate.y}
-
-        //EventHub.on( events.getDischarge, this.getDischarge.bind(this))
     }
 
     updateOnMap(mapScale, mapWidth, mapHeight) {
