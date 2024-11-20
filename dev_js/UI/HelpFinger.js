@@ -9,7 +9,7 @@ const settings = {
     scaleStep: 0.0005,
 }
 
-const helpDuration = 7 * 1000
+const helpDuration = 3.5 * 1000
 
 class HelpFinger extends Sprite {
     // state.getUseColor.bind(state), state.getAddColor.bind(state) 

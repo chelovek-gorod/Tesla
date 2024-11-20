@@ -246,7 +246,7 @@ class Interface extends Container {
         this.timePanel.activation( this.state.points >= this.state.addPerSecondPrice )
         if (this.state.help.has('button')) {
             this.state.help.delete('button')
-            this.finger.showHelp(this.mainButton)
+            setTimeout( () => this.finger.showHelp(this.mainButton), 1000 )
         }
     }
 
@@ -386,14 +386,14 @@ class Interface extends Container {
 
         // check click panel
         this.clickPanel.activation( this.state.points >= this.state.addPerClickPrice )
-        if (this.state.help.has('click') && this.clickPanel.this.isOn) {
+        if (this.state.help.has('click') && this.clickPanel.isOn) {
             this.state.help.delete('click')
             this.finger.showHelp(this.clickPanel)
         }
 
         // check auto panel
         this.timePanel.activation( this.state.points >= this.state.addPerSecondPrice )
-        if (this.state.help.has('auto') && this.timePanel.this.isOn) {
+        if (this.state.help.has('auto') && this.timePanel.isOn) {
             this.state.help.delete('auto')
             this.finger.showHelp(this.timePanel)
         }
