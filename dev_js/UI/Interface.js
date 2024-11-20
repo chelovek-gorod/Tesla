@@ -243,10 +243,11 @@ class Interface extends Container {
 
         EventHub.on( events.needVoiceDoIt, () => playVoice(this.voice_lets_do_it) )
 
-        this.timePanel.activation( this.state.points >= this.state.addPerSecondPrice )
         if (this.state.help.has('button')) {
-            this.state.help.delete('button')
-            setTimeout( () => this.finger.showHelp(this.mainButton), 1000 )
+            setTimeout( () => {
+                this.state.help.delete('button')
+                this.finger.showHelp(this.mainButton)
+            }, 3500 )
         }
     }
 
