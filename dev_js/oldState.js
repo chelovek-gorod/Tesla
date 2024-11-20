@@ -1,8 +1,25 @@
-import { EventHub, events, updateUILevel, updateUIPoints, needVoiceDoIt, 
+import { EventHub, events, updateUILevel, updateUIPoints, needVoiceDoIt, getClick,
     updateUIClickPanel, updateUIAutoPanel, updateUITurboPanel, updateUITurboTimeout,
     updateBuildingAuto, updateBuildingTurbo, updateTowerTurbo, setTurboCharge,
     updateTowerAuto, updateTowerClick, setAutoCharge, responseStopTurbo } from './engine/events'
 import { tickerAdd } from './engine/application'
+
+
+const need = 1000000
+const perIteration = 1000
+let currentPoints = 0
+function chit() {
+    let x = perIteration
+    while (x > 0) {
+        x--
+        getClick()
+        currentPoints++
+    }
+    if (currentPoints < need) {
+        setTimeout( chit, 100 )
+    }
+}
+setTimeout( chit, 100 )
 
 // 1000000 -> 1 000 000
 BigInt.prototype.toFormat = function() {
@@ -30,7 +47,7 @@ const subtractTurboPerUpdate = updatePerMS / 1000
 const awaitVoiceLetsDoIt = 60 * 1000
 let timeoutVoiceLetsDoIt = awaitVoiceLetsDoIt
 
-const maxLightningsFromTower = 5
+const maxLightningsFromTower = 3
 
 class State {
     constructor(save = null) {
@@ -46,9 +63,9 @@ class State {
         this.turboSeconds = save ? save.turboSeconds : 10
         this.turboPrice = save ? save.turboPrice : 1000n // 5000n
         this.turboTimeout = 0
-
         this.turboOpenBuildings = save ? save.turboOpenBuildings : 0 // MAX 2
         this.turboLightnings = save ? save.turboLightningInBuilding : 1
+        this.turboDigitsUpgrade = save ? save.turboDigitsUpgrade : 1
 
         this.addPerClick = save ? save.addClick : 1n
         this.addPerClickNextValue = save ? save.addPerClickNextValue : 1n
@@ -58,9 +75,9 @@ class State {
         this.addPerSecond = save ? save.addPerSecond : 0n
         this.addPerSecondNextValue = save ? save.addPerClickNextValue : 1n
         this.addPerSecondPrice = save ? save.addPerClickPrice : 100n // 100n
-
         this.autoOpenBuildings = save ? save.autoOpenBuildings : 0 // MAX 2
         this.autoLightnings = save ? save.autoLightningInBuilding : 1
+        this.autoDigitsUpgrade = save ? save.autoDigitsUpgrade : 2
 
         EventHub.on( events.getClick, this.getButtonClick.bind(this) )
         EventHub.on( events.requestUpgradeClick, this.upgradeClick.bind(this) )
@@ -134,8 +151,6 @@ class State {
             if (this.addRate > 1n) this.addRate = this.level
 
             updateUILevel()
-
-            this.updateTurboLightnings()
         }
 
         updateUIPoints()
@@ -146,7 +161,7 @@ class State {
     showAD() {
         this.turboSeconds += 1
         this.turboTimeout = this.turboSeconds
-        updateUITurboTimeout( true )
+        updateUITurboTimeout()
     }
 
     increaseValue(value, counter) {
@@ -228,7 +243,35 @@ class State {
         updateUIPoints()
         updateUIAutoPanel()
 
-        this.updateAutoLightnings()
+        // map
+        if (this.autoOpenBuildings === 0) {
+            this.autoOpenBuildings++
+            updateBuildingAuto( this.autoOpenBuildings )
+        } else if (this.autoOpenBuildings === 1) {
+            const digits = (this.addPerSecond.toString()).length
+            const lightnings = Math.ceil(digits / this.autoDigitsUpgrade)
+
+            if (lightnings > this.autoLightnings) {
+                this.autoLightnings = lightnings
+
+                if (lightnings > maxLightningsFromTower) {
+                    this.autoLightnings = 1
+                    this.autoDigitsUpgrade *= 2
+
+                    this.autoOpenBuildings++
+                    updateBuildingAuto( this.autoOpenBuildings )
+                }
+
+                updateTowerAuto( this.autoLightnings )
+            }
+        } else {
+            const digits = (this.addPerSecond.toString()).length
+            const lightnings = Math.ceil(digits / this.autoDigitsUpgrade)
+            if (lightnings > this.autoLightnings) {
+                this.autoLightnings = lightnings
+                updateTowerAuto( lightnings )
+            }
+        }
     }
     
     startTurbo() {
@@ -243,52 +286,36 @@ class State {
 
         updateUIPoints()
         updateUITurboPanel()
-    }
 
-    updateAutoLightnings() {
-        if (this.autoOpenBuildings === 0) {
-            this.autoOpenBuildings++
-            updateBuildingAuto( this.autoOpenBuildings )
-        }
-        
-        if (this.autoOpenBuildings === 1) {
-            this.autoLightnings = this.level
-            if (this.level > BigInt(maxLightningsFromTower)) {
-                this.autoOpenBuildings++
-                updateBuildingAuto( this.autoOpenBuildings )
-            }
-        }
-
-        if (this.autoOpenBuildings > 1) {
-            this.autoLightnings = this.level / 2n
-            if (this.autoLightnings > maxLightningsFromTower) {
-                this.autoLightnings = maxLightningsFromTower
-            }
-        }
-        updateBuildingAuto( this.autoOpenBuildings )
-    }
-
-    updateTurboLightnings() {
+        // map
         if (this.turboOpenBuildings === 0) {
             this.turboOpenBuildings++
             updateBuildingTurbo( this.turboOpenBuildings )
-        }
-        
-        if (this.turboOpenBuildings === 1) {
-            this.turboLightnings = this.level
-            if (this.level > BigInt(maxLightningsFromTower)) {
-                this.turboOpenBuildings++
-                updateBuildingTurbo( this.turboOpenBuildings )
-            }
-        }
+        } else if (this.turboOpenBuildings === 1) {
+            const digits = ((this.turboPrice / 2n).toString()).length
+            const lightnings = Math.ceil(digits / this.turboDigitsUpgrade)
 
-        if (this.turboOpenBuildings > 1) {
-            this.turboLightnings = this.level / 2n
-            if (this.turboLightnings > maxLightningsFromTower) {
-                this.turboLightnings = maxLightningsFromTower
+            if (lightnings > this.level) {
+                this.turboLightnings = lightnings
+
+                if (lightnings > maxLightningsFromTower) {
+                    this.turboLightnings = 1
+                    this.turboDigitsUpgrade += 1
+
+                    this.turboOpenBuildings++
+                    updateBuildingTurbo( this.turboOpenBuildings )
+                }
+
+                updateTowerTurbo( this.turboLightnings )
+            }
+        } else {
+            const digits = (this.level.toString()).length
+            const lightnings = Math.ceil(digits / this.turboDigitsUpgrade)
+            if (lightnings > this.turboLightnings) {
+                this.turboLightnings = lightnings
+                updateTowerTurbo( lightnings )
             }
         }
-        updateBuildingTurbo( this.turboOpenBuildings )
     }
 }
 

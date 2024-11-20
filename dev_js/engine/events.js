@@ -93,8 +93,8 @@ export function updateUIAutoPanel() {
 export function updateUITurboPanel() {
     EventHub.emit( events.updateUITurboPanel )
 }
-export function updateUITurboTimeout() {
-    EventHub.emit( events.updateUITurboTimeout )
+export function updateUITurboTimeout(data) {
+    EventHub.emit( events.updateUITurboTimeout, data )
 }
 
 export function updateBuildingAuto(data) {

@@ -26,6 +26,8 @@ class ActionScene extends Container {
     constructor( screenData, state ) {
         super()
 
+        this.state = state
+
         this.lightnings = []
 
         this.rgReserve = state.turboOpenBuildings
@@ -115,12 +117,9 @@ class ActionScene extends Container {
         this.lightningCanvasFirst.lineWidth = 2
         this.addChild(this.lightningCanvasFirst)
 
-        this.wiresButton = new Thing('wires_button', 1, {x: 0, y: 0})
-        this.addChild(this.wiresButton)
-
         const initDataButtonLT = {
             scale: 1,
-            offsetRate: {x: 0.25, y: 0},
+            offsetRate: {x: 0.25, y: 0.1},
             canvasIndex: 0,
             dischargeEventName: events.getClick,
             upgradeEventName: events.updateTowerClick,
@@ -176,7 +175,6 @@ class ActionScene extends Container {
 
         this.mainButtonLT.updateOnMap(mapScale, mapWidth, mapHeight)
         this.teslaTower.updateOnMap(mapScale, mapWidth, mapHeight)
-        this.wiresButton.updateOnMap(mapScale, mapWidth, mapHeight)
 
         this.car.updateOnMap(mapScale, mapWidth, mapHeight)
         this.cube.updateOnMap(mapScale, mapWidth, mapHeight)
@@ -227,10 +225,10 @@ class ActionScene extends Container {
 
     updateBuildingTurbo( rotorOpenIndex ) {
         if (rotorOpenIndex === 1) {
-            this.bbRG1 = new RotorGenerator(this.bbRG1)
+            this.bbRG1 = new RotorGenerator(this.bbRG1, this.state.addRate > 1n)
             this.RG1LT.activate()
         } else if (rotorOpenIndex === 2) {
-            this.bbRG2 = new RotorGenerator(this.bbRG2)
+            this.bbRG2 = new RotorGenerator(this.bbRG2, this.state.addRate > 1n)
             this.RG2LT.activate()
         } else {
             console.error(`get wrong RotorGeneratorIndex in ActionScene.js: ${rotorOpenIndex}`)

@@ -4,7 +4,7 @@ import { screenResize, clearSnow } from './events'
 
 const app = new Application()
 
-const autoFullScreen = true
+const autoFullScreen = false
 function setFullScreen( canvas ) {
     canvas.onclick = () => {
         if (document.fullscreenEnabled

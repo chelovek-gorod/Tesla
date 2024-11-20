@@ -4,13 +4,13 @@ import { sprites } from "../engine/loader"
 import Smoke from "./Smoke"
 
 class RotorGenerator extends AnimatedSprite {
-    constructor(parentBox) {
+    constructor(parentBox, isActive) {
         super(sprites.rotor_generator.animations.go)
         this.anchor.set(0.5, 1)
         this.position.set(parentBox.x, parentBox.y)
         this.scale.set(parentBox.scale.x)
         this.animationSpeed = 1
-        this.play()
+        isActive ? this.play() : this.stop()
         
         this.sizeScale = parentBox.sizeScale
         this.offsetRate = {x: parentBox.offsetRate.x, y: parentBox.offsetRate.y}

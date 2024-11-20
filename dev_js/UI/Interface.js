@@ -448,8 +448,9 @@ class Interface extends Container {
         this.textInfoTurboPrice.text = this.state.turboPrice.toFormat()
     }
     
-    updateTurboTimeout() {
+    updateTurboTimeout( isUpgrade ) {
         this.textTurboTimer.text = this.state.turboTimeout.toFixed(1)
+        if (isUpgrade) this.addChild( new Pointer(this.textTurboTimer.position) )
     }
 }
 
