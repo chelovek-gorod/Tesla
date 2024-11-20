@@ -15,6 +15,8 @@ export const events = {
     screenResize: 'screenResize',
     clearSnow: 'clearSnow',
 
+    needVoiceDoIt: 'needVoiceDoIt',
+
     getClick: 'getClick',
     setAutoCharge: 'setAutoCharge',
     setTurboCharge: 'setTurboCharge',
@@ -45,6 +47,10 @@ export function screenResize( data ) {
 }
 export function clearSnow() {
     EventHub.emit( events.clearSnow )
+}
+
+export function needVoiceDoIt() {
+    EventHub.emit( events.needVoiceDoIt )
 }
 
 export function getClick() {

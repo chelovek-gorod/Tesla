@@ -7,7 +7,7 @@ class Sparks extends AnimatedSprite {
     constructor(point, scale) {
         super(sprites.sparks.animations.splash)
         this.anchor.set(0.5)
-        this.scale.set(scale * 0.25)
+        this.scale.set(scale * 0.5)
         this.animationSpeed = 0.5
         this.loop = false
         //this.updateAnchor = true

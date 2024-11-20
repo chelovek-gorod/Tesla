@@ -12,6 +12,8 @@ const paths = {
 export const sprites = {
     marsGameLogo: 'mars_game_456x137px.png',
 
+    finger: 'finger_220x220px.png',
+
     night_sky: 'night_sky_400x400px.png',
     moon: 'moon_212x212px.png',
     snow_bg: 'snow_bg_2048x920.png',
@@ -53,6 +55,9 @@ const soundsNumber = Object.keys(sounds).length
 for (let se in sounds) sounds[se] = paths.sounds + sounds[se]
 
 export const voices = {
+    en_start_first: 'voice_en_start_first.mp3',
+    en_start_second: 'voice_en_start_second.mp3',
+    en_lets_do_it: 'voice_en_lets_do_it.mp3',
     en_available_auto_upgrade: 'voice_en_available_auto_upgrade.mp3',
     en_available_click_upgrade: 'voice_en_available_click_upgrade.mp3',
     en_available_turbo: 'voice_en_available_turbo.mp3',
@@ -61,6 +66,9 @@ export const voices = {
     en_not_available: 'voice_en_not_available.mp3',
     en_turbo_upgrade: 'voice_en_turbo_upgrade.mp3',
 
+    ru_start_first: 'voice_ru_start_first.mp3',
+    ru_start_second: 'voice_ru_start_second.mp3',
+    ru_lets_do_it: 'voice_ru_lets_do_it.mp3',
     ru_available_auto_upgrade: 'voice_ru_available_auto_upgrade.mp3',
     ru_available_click_upgrade: 'voice_ru_available_click_upgrade.mp3',
     ru_available_turbo: 'voice_ru_available_turbo.mp3',
@@ -83,9 +91,8 @@ export const music = {
 for (let bgm in music) music[bgm] = paths.music + music[bgm]
 
 export const fonts = {
-    digital: 'Digital.ttf',
     light: 'Handjet-Light.ttf',
-    extraLight: 'Handjet-ExtraLight.ttf',
+    normal: 'Handjet-Regular.ttf',
 }
 for (let font in fonts) fonts[font] = paths.fonts + fonts[font]
 

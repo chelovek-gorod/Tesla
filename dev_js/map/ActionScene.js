@@ -12,9 +12,9 @@ import RotorGenerator from "./RotorGenerator"
 import Smoke from './Smoke'
 import Sparks from "./Sparks"
 
-const effects = [
-    0, 1, 0, 0, 0, 1, 0, 0, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 2, 1
-]
+// 0 - no effect (95%); 1 - sparks(2%); 2 - sparks and smoke (3%)
+const effects = Array(100).fill(0).fill(1, 95).fill(2, 97)
+effects.sort(() => Math.random() - 0.5)
 let effectIndex = Math.floor( Math.random() * effects.length )
 function getEffect() {
     effectIndex++
@@ -54,8 +54,6 @@ class ActionScene extends Container {
         this.RG1LT = new LightningTower(initDataRG1LT)
         this.addChild(this.RG1LT)
         this.bbRG1 = new Thing('building_box', 0.6, {x: 0.3, y: -0.8})
-        this.bbRG1.eventMode = 'static'
-        this.bbRG1.on('pointerdown', () => this.bbRG1 = new RotorGenerator(this.bbRG1) )
         this.addChild(this.bbRG1)
         
         // left
@@ -86,8 +84,6 @@ class ActionScene extends Container {
         this.RG2LT = new LightningTower(initDataRG2LT)
         this.addChild(this.RG2LT)
         this.bbRG2 = new Thing('building_box', 0.85, {x: -0.42, y: -0.2})
-        this.bbRG2.eventMode = 'static'
-        this.bbRG2.on('pointerdown', () => this.bbRG2 = new RotorGenerator(this.bbRG2) )
         this.addChild(this.bbRG2)
 
         // right
@@ -103,8 +99,6 @@ class ActionScene extends Container {
         this.WG2LT = new LightningTower(initDataWG2LT)
         this.addChild(this.WG2LT)
         this.bbWG2 = new Thing('building_box', 0.9, {x: 0.42, y: -0.4})
-        this.bbWG2.eventMode = 'static'
-        this.bbWG2.on('pointerdown', () => this.bbWG2 = new WindGenerator(this.bbWG2) )
         this.addChild(this.bbWG2)
 
         this.lightningCanvasSecond = new Graphics()

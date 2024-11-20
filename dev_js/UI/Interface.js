@@ -11,10 +11,22 @@ import Wire from "./Wire"
 import { distanceH, distanceV, mainButtonWidth, mainButtonOffsetV,
     turboSwitchOffsetH, levelPanelOffsetH, panelWidth, panelOffsetH, panelOffsetV,
     wiresSize, wiresOffset, controlSizeH, controlSizeV, levelStateRectRange} from "../constants"
+import { playVoice } from "../engine/sound"
+import Pointer from "./Pointer"
+import HelpFinger from "./HelpFinger"
 
 class Interface extends Container {
     constructor( screenData, state, isLangRu ) {
         super()
+
+        this.finger = new HelpFinger(this)
+
+        this.voices_next_level = isLangRu ? voices.ru_next_level : voices.en_next_level
+
+        if (state.points === 0n) playVoice(isLangRu ? voices.ru_start_first : voices.en_start_first)
+        else playVoice(isLangRu ? voices.ru_start_second : voices.en_start_second)
+        this.voice_lets_do_it = isLangRu ? voices.ru_lets_do_it : voices.en_lets_do_it
+        playVoice(this.voice_lets_do_it)
 
         this.LTXT = isLangRu ? 'Уровень:' : 'Level:'
         this.CTXT = isLangRu ? 'За клик' : 'Per click'
@@ -61,7 +73,7 @@ class Interface extends Container {
 
         this.textLevel = new Text({
             text: `${this.LTXT} ${this.state.level.toFormat()}`,
-            style: textStyles.infoIcons
+            style: textStyles.level
         })
         this.textLevel.anchor.set(0.5)
         this.textLevel.position.x = 0
@@ -75,7 +87,7 @@ class Interface extends Container {
         this.textLevelPrice.position.x = 0
         this.addChild(this.textLevelPrice)
 
-        this.textScore = new Text({ text: this.state.points.toFormat(), style: textStyles.AD })
+        this.textScore = new Text({ text: this.state.points.toFormat(), style: textStyles.score })
         this.textScore.anchor.set(0.5)
         this.textScore.position.x = 0
         this.addChild(this.textScore)
@@ -101,18 +113,18 @@ class Interface extends Container {
             text: '+ ' + this.state.addPerClickNextValue.toFormat(),
             style: textStyles.infoBonus
         })
-        this.textClickBonus.anchor.set(0.5, 1)
+        this.textClickBonus.anchor.set(0.5)
         this.addChild(this.textClickBonus)
 
-        this.textClickIcons = new Text({ text: this.CTXT, style: textStyles.infoSmallIcons })
-        this.textClickIcons.anchor.set(0.5, 1)
+        this.textClickIcons = new Text({ text: this.CTXT, style: textStyles.label })
+        this.textClickIcons.anchor.set(0.5)
         this.addChild(this.textClickIcons)
 
         this.textClickPrice = new Text({
             text: this.state.addPerClickPrice.toFormat(),
             style: textStyles.infoPrice
         })
-        this.textClickPrice.anchor.set(0.5, 1)
+        this.textClickPrice.anchor.set(0.5)
         this.addChild(this.textClickPrice)
 
         // auto panel
@@ -126,18 +138,18 @@ class Interface extends Container {
             text: '+ ' + this.state.addPerSecondNextValue.toFormat(),
             style: textStyles.infoBonus
         })
-        this.textAutoBonus.anchor.set(0.5, 1)
+        this.textAutoBonus.anchor.set(0.5)
         this.addChild(this.textAutoBonus)
 
-        this.textAutoIcons = new Text({ text: this.ATXT, style: textStyles.infoSmallIcons })
-        this.textAutoIcons.anchor.set(0.5, 1)
+        this.textAutoIcons = new Text({ text: this.ATXT, style: textStyles.label })
+        this.textAutoIcons.anchor.set(0.5)
         this.addChild(this.textAutoIcons)
 
         this.textAutoPrice = new Text({
             text: this.state.addPerSecondPrice.toFormat(),
             style: textStyles.infoPrice
         })
-        this.textAutoPrice.anchor.set(0.5, 1)
+        this.textAutoPrice.anchor.set(0.5)
         this.addChild(this.textAutoPrice)
 
         // turbo switch
@@ -151,18 +163,18 @@ class Interface extends Container {
 
         this.textTurboTimer = new Text({
             text: this.state.turboSeconds.toFixed(1),
-            style: textStyles.infoIcons })
-        this.textTurboTimer.anchor.set(0.5, 1)
+            style: textStyles.score })
+        this.textTurboTimer.anchor.set(0.5)
         this.textTurboTimer.position.x = -turboSwitchOffsetH
-        this.textTurboTimer.position.y = -70
+        this.textTurboTimer.position.y = -90
         this.addChild(this.textTurboTimer)
 
         this.textTurboLabel = new Text({
             text: this.TtTXT,
-            style: textStyles.infoSmallIcons})
-        this.textTurboLabel.anchor.set(0.5, 1)
+            style: textStyles.label})
+        this.textTurboLabel.anchor.set(0.5)
         this.textTurboLabel.position.x = -turboSwitchOffsetH
-        this.textTurboLabel.position.y = -50
+        this.textTurboLabel.position.y = -62
         this.addChild(this.textTurboLabel)
         
         // info panel
@@ -171,52 +183,52 @@ class Interface extends Container {
         this.levelPanel.position.y = 0
         this.addChild(this.levelPanel)
 
-        this.textInfoClickIcon = new Text({ text: this.CTXT, style: textStyles.infoSmallIcons })
-        this.textInfoClickIcon.anchor.set(0.5, 1)
+        this.textInfoClickIcon = new Text({ text: this.CTXT, style: textStyles.label })
+        this.textInfoClickIcon.anchor.set(0.5)
         this.textInfoClickIcon.position.x = levelPanelOffsetH
-        this.textInfoClickIcon.position.y = -162
+        this.textInfoClickIcon.position.y = -172
         this.addChild(this.textInfoClickIcon)
 
         this.textInfoClickAdd = new Text({
             text: '+ ' + this.state.addPerClick.toFormat(),
             style: textStyles.infoBonus
         })
-        this.textInfoClickAdd.anchor.set(0.5, 1)
+        this.textInfoClickAdd.anchor.set(0.5)
         this.textInfoClickAdd.position.x = levelPanelOffsetH
-        this.textInfoClickAdd.position.y = -144
+        this.textInfoClickAdd.position.y = -150
         this.addChild(this.textInfoClickAdd)
 
-        this.textInfoAutoIcon = new Text({ text: this.ATXT, style:textStyles.infoSmallIcons })
-        this.textInfoAutoIcon.anchor.set(0.5, 1)
+        this.textInfoAutoIcon = new Text({ text: this.ATXT, style:textStyles.label })
+        this.textInfoAutoIcon.anchor.set(0.5)
         this.textInfoAutoIcon.position.x = levelPanelOffsetH
-        this.textInfoAutoIcon.position.y = -114
+        this.textInfoAutoIcon.position.y = -126
         this.addChild(this.textInfoAutoIcon)
 
         this.textInfoAutoAdd = new Text({
             text: '+ ' + this.state.addPerSecond.toFormat(),
             style: textStyles.infoBonus
         })
-        this.textInfoAutoAdd.anchor.set(0.5, 1)
+        this.textInfoAutoAdd.anchor.set(0.5)
         this.textInfoAutoAdd.position.x = levelPanelOffsetH
-        this.textInfoAutoAdd.position.y = -96
+        this.textInfoAutoAdd.position.y = -102
         this.addChild(this.textInfoAutoAdd)
 
         this.textInfoTurboBonus = new Text({
             text:`${this.TTXT} x ${this.state.level.toFormat()}`,
-            style: textStyles.infoSmallIcons
+            style: textStyles.label
         })
-        this.textInfoTurboBonus.anchor.set(0.5, 1)
+        this.textInfoTurboBonus.anchor.set(0.5)
         this.textInfoTurboBonus.position.x = levelPanelOffsetH
-        this.textInfoTurboBonus.position.y = -60
+        this.textInfoTurboBonus.position.y = -74
         this.addChild(this.textInfoTurboBonus)
 
         this.textInfoTurboPrice = new Text({
             text: this.state.turboPrice.toFormat(),
             style: textStyles.infoPrice
         })
-        this.textInfoTurboPrice.anchor.set(0.5, 1)
+        this.textInfoTurboPrice.anchor.set(0.5)
         this.textInfoTurboPrice.position.x = levelPanelOffsetH
-        this.textInfoTurboPrice.position.y = -44
+        this.textInfoTurboPrice.position.y = -54
         this.addChild(this.textInfoTurboPrice)
 
         this.screenResize( screenData )
@@ -228,6 +240,14 @@ class Interface extends Container {
         EventHub.on( events.updateUIAutoPanel, this.updateAutoPanel.bind(this) )
         EventHub.on( events.updateUITurboPanel, this.updateTurboPanel.bind(this) )
         EventHub.on( events.updateUITurboTimeout, this.updateTurboTimeout.bind(this) )
+
+        EventHub.on( events.needVoiceDoIt, () => playVoice(this.voice_lets_do_it) )
+
+        this.timePanel.activation( this.state.points >= this.state.addPerSecondPrice )
+        if (this.state.help.has('button')) {
+            this.state.help.delete('button')
+            this.finger.showHelp(this.mainButton)
+        }
     }
 
     screenResize(screenData) {
@@ -243,26 +263,26 @@ class Interface extends Container {
             this.clickPanel.position.y = -panelOffsetV
 
             this.textClickBonus.position.x = -panelOffsetH + 105
-            this.textClickBonus.position.y = -panelOffsetV - 110
+            this.textClickBonus.position.y = -panelOffsetV - 116
 
             this.textClickIcons.position.x = -panelOffsetH + 105
-            this.textClickIcons.position.y = -panelOffsetV - 86
+            this.textClickIcons.position.y = -panelOffsetV - 97
 
             this.textClickPrice.position.x = -panelOffsetH + 105
-            this.textClickPrice.position.y = -panelOffsetV - 68
+            this.textClickPrice.position.y = -panelOffsetV - 76
     
             // auto panel position
             this.timePanel.position.x = panelOffsetH
             this.timePanel.position.y = -panelOffsetV
 
             this.textAutoBonus.position.x = panelOffsetH + 105
-            this.textAutoBonus.position.y = -panelOffsetV - 110
+            this.textAutoBonus.position.y = -panelOffsetV - 116
 
             this.textAutoIcons.position.x = panelOffsetH + 105
-            this.textAutoIcons.position.y = -panelOffsetV - 86
+            this.textAutoIcons.position.y = -panelOffsetV - 97
 
             this.textAutoPrice.position.x = panelOffsetH + 105
-            this.textAutoPrice.position.y = -panelOffsetV - 68
+            this.textAutoPrice.position.y = -panelOffsetV - 76
     
             // wires
             this.wireAL.position.x = -mainButtonWidth * 1.5
@@ -283,26 +303,26 @@ class Interface extends Container {
             this.clickPanel.position.y = -distanceV
 
             this.textClickBonus.position.x = this.clickPanel.position.x + 105
-            this.textClickBonus.position.y = -distanceV - 110
+            this.textClickBonus.position.y = -distanceV - 116
 
             this.textClickIcons.position.x = this.clickPanel.position.x + 105
-            this.textClickIcons.position.y = -distanceV - 86
+            this.textClickIcons.position.y = -distanceV - 97
 
             this.textClickPrice.position.x = this.clickPanel.position.x + 105
-            this.textClickPrice.position.y = -distanceV - 68
+            this.textClickPrice.position.y = -distanceV - 76
 
             // auto panel position
             this.timePanel.position.x = panelWidth * 0.5 + distanceH * 4
             this.timePanel.position.y = -distanceV
 
             this.textAutoBonus.position.x = this.timePanel.position.x + 105
-            this.textAutoBonus.position.y = -distanceV - 110
+            this.textAutoBonus.position.y = -distanceV - 116
 
             this.textAutoIcons.position.x = this.timePanel.position.x + 105
-            this.textAutoIcons.position.y = -distanceV - 86
+            this.textAutoIcons.position.y = -distanceV - 97
 
             this.textAutoPrice.position.x = this.timePanel.position.x + 105
-            this.textAutoPrice.position.y = -distanceV - 68
+            this.textAutoPrice.position.y = -distanceV - 76
 
             // wires
             this.wireAL.position.x = -mainButtonWidth * 2
@@ -320,9 +340,9 @@ class Interface extends Container {
         this.scale.set(scale)
 
         this.topDisplay.position.y = -screenData.height / scale
-        this.textLevel.position.y = this.topDisplay.position.y + 14
-        this.textLevelPrice.position.y = this.topDisplay.position.y + 38
-        this.textScore.position.y = this.topDisplay.position.y + 72
+        this.textLevel.position.y = this.topDisplay.position.y + 16
+        this.textLevelPrice.position.y = this.topDisplay.position.y + 46
+        this.textScore.position.y = this.topDisplay.position.y + 78
 
         this.redrawLevelProgressRect()
 
@@ -334,10 +354,10 @@ class Interface extends Container {
         this.levelState.clear()
         this.levelState.roundRect(
             this.topDisplay.position.x - 293,
-            this.topDisplay.position.y - 12,
+            this.topDisplay.position.y - 8,
             (levelStateRectRange / Number(this.state.levelPrice)) * Number(this.state.levelScored),
             64,
-            12
+            8
         )
         this.levelState.fill(0xff7777)
     }
@@ -348,9 +368,13 @@ class Interface extends Container {
         // top display
         this.textLevel.text = `${this.LTXT} ${this.state.level.toFormat()}`
         this.textLevelPrice.text = `${this.state.levelScored.toFormat()} / ${this.state.levelPrice.toFormat()}`
+        this.addChild( new Pointer(this.textLevel.position) )
 
         // info panel
         this.textInfoTurboBonus.text = `${this.TTXT} x ${this.state.level.toFormat()}`
+        this.addChild( new Pointer(this.textInfoTurboBonus.position) )
+
+        playVoice( this.voices_next_level )
     }
     
     updatePoints() {
@@ -362,14 +386,27 @@ class Interface extends Container {
 
         // check click panel
         this.clickPanel.activation( this.state.points >= this.state.addPerClickPrice )
+        if (this.state.help.has('click') && this.clickPanel.this.isOn) {
+            this.state.help.delete('click')
+            this.finger.showHelp(this.clickPanel)
+        }
 
         // check auto panel
         this.timePanel.activation( this.state.points >= this.state.addPerSecondPrice )
+        if (this.state.help.has('auto') && this.timePanel.this.isOn) {
+            this.state.help.delete('auto')
+            this.finger.showHelp(this.timePanel)
+        }
 
         // check turbo panel
         if (this.turboSwitch.state === "ready" || this.turboSwitch.state === "idle") {
             const turboState = this.state.points >= this.state.turboPrice ? "ready" : "idle"
             this.turboSwitch.updateState(turboState)
+
+            if (this.turboSwitch.state === "ready" && this.state.help.has('turbo')) {
+                this.state.help.delete('turbo')
+                this.finger.showHelp(this.turboSwitch)
+            }
         }
     }
     
@@ -382,6 +419,7 @@ class Interface extends Container {
         
         // info panel
         this.textInfoClickAdd.text = '+ ' + this.state.addPerClick.toFormat()
+        this.addChild( new Pointer(this.textInfoClickAdd.position) )
     }
     
     updateAutoPanel() {
@@ -393,6 +431,7 @@ class Interface extends Container {
         
         // info panel
         this.textInfoAutoAdd.text = '+ ' + this.state.addPerSecond.toFormat()
+        this.addChild( new Pointer(this.textInfoAutoAdd.position) )
     }
     
     updateTurboPanel() {

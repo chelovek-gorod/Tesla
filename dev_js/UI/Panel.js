@@ -28,7 +28,8 @@ class Panel extends Container {
         
         this.isOn = isOn
         this.image.texture = sprites.panel.textures[isOn ? 'on' : 'off']
-        playVoice( this.readyVoice )
+        
+        if (this.isOn) playVoice( this.readyVoice )
     }
 
     getClick() {

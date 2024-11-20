@@ -4,6 +4,16 @@ import { screenResize, clearSnow } from './events'
 
 const app = new Application()
 
+const autoFullScreen = true
+function setFullScreen( canvas ) {
+    canvas.onclick = () => {
+        if (document.fullscreenEnabled
+        && !document.fullscreenElement) {
+            document.body.requestFullscreen();
+        }
+    }
+}
+
 const appSettings = {
     background: 0x000000,
     antialias: true, // сглаживание
@@ -22,6 +32,8 @@ function appReady() {
     })
     document.body.append( app.canvas )
     resize()
+
+    if (autoFullScreen) setFullScreen( app.canvas )
 }
 
 let tickerArr = [] // entities for update (need e.tick(delta) method)

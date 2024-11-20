@@ -1,30 +1,55 @@
-import { EventHub, events, updateUILevel, updateUIPoints,
+import { EventHub, events, updateUILevel, updateUIPoints, needVoiceDoIt,
     updateUIClickPanel, updateUIAutoPanel, updateUITurboPanel, updateUITurboTimeout,
     updateBuildingAuto, updateBuildingTurbo, updateTowerTurbo, setTurboCharge,
     updateTowerAuto, updateTowerClick, setAutoCharge, responseStopTurbo } from './engine/events'
 import { tickerAdd } from './engine/application'
 
+// 1000000 -> 1 000 000
+BigInt.prototype.toFormat = function() {
+    return this.toString().replace(/(\d)(?=(\d{3})+$)/g, '$1 ')
+}
+
+// x1000 per 10 steps (1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024)
+BigInt.prototype.x2 = function() {
+    return this + this
+}
+
+// x1000 per 9 steps (1, 2, 5, 10, 20, 50, 100, 200, 500, 1000)
+BigInt.prototype.x3 = function() {
+    return (this.toString()[0] === '2') ? this*25n/10n : this*2n
+}
+
+// x1000 per 5 steps (1, 5, 20, 100, 500, 1000)
+BigInt.prototype.x5 = function() {
+    return (this.toString()[0] === '5') ? this*4n : this*5n
+}
+
 const updatePerMS = 77 // 1/13 of second
 const subtractTurboPerUpdate = updatePerMS / 1000
 
+const awaitVoiceLetsDoIt = 60 * 1000
+let timeoutVoiceLetsDoIt = awaitVoiceLetsDoIt
+
 class State {
     constructor(save = null) {
+        this.help = new Set( save ? save.help : ['button', 'auto', 'click', 'turbo'] )
+
         this.points = save ? save.points : 0n
         this.addRate = 1n // x turbo in TURBO UES
 
-        this.level = save ? save.level : 0n
+        this.level = save ? save.level : 1n
         this.levelScored = save ? save.levelScored : 0n
         this.levelPrice = save ? save.levelPrice : 1000n // 1000n
 
         this.turboSeconds = save ? save.turboSeconds : 10
-        this.turboPrice = save ? save.turboPrice : 5000n // 5000n
+        this.turboPrice = save ? save.turboPrice : 1000n // 5000n
         this.turboTimeout = 0
         this.turboOpenBuildings = save ? save.turboOpenBuildings : 0 // MAX 2
         this.turboLightnings = save ? save.turboLightningInBuilding : 1
         this.turboDigitsUpgrade = save ? save.turboDigitsUpgrade : 3
 
         this.addPerClick = save ? save.addClick : 1n
-        this.addPerClickNextValue = save ? save.addPerClickNextValue : 2n
+        this.addPerClickNextValue = save ? save.addPerClickNextValue : 1n
         this.addPerClickPrice = save ? save.addPerClickPrice : 500n // 500n
         this.clickLightnings = save ? save.clickLightnings : 1
 
@@ -35,7 +60,7 @@ class State {
         this.autoLightnings = save ? save.autoLightningInBuilding : 1
         this.autoDigitsUpgrade = save ? save.autoDigitsUpgrade : 3
 
-        EventHub.on( events.getClick, () => this.getPoints(this.addPerClick) )
+        EventHub.on( events.getClick, this.getButtonClick.bind(this) )
         EventHub.on( events.requestUpgradeClick, this.upgradeClick.bind(this) )
         EventHub.on( events.requestUpgradeAuto, this.upgradeAuto.bind(this) )
         EventHub.on( events.requestStartTurbo, this.startTurbo.bind(this) )
@@ -48,7 +73,18 @@ class State {
         tickerAdd(this)
     }
 
+    getButtonClick() {
+        timeoutVoiceLetsDoIt = awaitVoiceLetsDoIt
+        this.getPoints(this.addPerClick)
+    }
+
     tick(time) {
+        timeoutVoiceLetsDoIt -= time.deltaMS
+        if (timeoutVoiceLetsDoIt <= 0) {
+            timeoutVoiceLetsDoIt = awaitVoiceLetsDoIt
+            needVoiceDoIt()
+        }
+
         this.lastTimeStamp += time.deltaMS
         if (this.lastTimeStamp > updatePerMS) {
             this.lastTimeStamp -= updatePerMS
@@ -91,7 +127,7 @@ class State {
         if (this.levelScored >= this.levelPrice) {
             this.level++
             this.levelScored -= this.levelPrice
-            this.levelPrice = this.levelPrice.increase()
+            this.levelPrice = this.levelPrice.x5()
 
             if (this.addRate > 1n) this.addRate = this.level
 
@@ -109,15 +145,44 @@ class State {
         updateUITurboTimeout()
     }
 
+    increaseValue(value, counter) {
+        const stringNumber = value.toString()
+        const range = stringNumber.length - 1
+        switch (stringNumber[0]) {
+            case '1' :
+                updateCounter(counter, 1)
+                return BigInt(2 * (10**range))
+            case '2' :
+                updateCounter(counter, 1)
+                return BigInt(5 * (10**range))
+            case '5' :
+                updateCounter(counter, 2)
+                return BigInt(10 * (10**range))
+        }
+    }
+
     upgradeClick() {
         if (this.points < this.addPerClickPrice) return
 
         // UI
         this.points -= this.addPerClickPrice
-        this.addPerClickPrice = this.addPerClickPrice.increase()
-
-        this.addPerClick = this.addPerClickNextValue
-        this.addPerClickNextValue = this.addPerClickNextValue.increase()
+        this.addPerClickPrice = this.addPerClickPrice.x2()
+ 
+        switch( this.addPerClick.toString()[0] ) {
+            case '1':
+                this.addPerClick += this.addPerClickNextValue
+                break
+            case '2':
+                this.addPerClick += this.addPerClickNextValue
+                this.addPerClickNextValue *= 2n
+                break
+            case '3':
+            case '5':
+                this.addPerClick += this.addPerClickNextValue
+                this.addPerClickNextValue = this.addPerClick
+                break
+            default: this.addPerClick = 1n // 0n
+        }
 
         updateUIPoints()
         updateUIClickPanel()
@@ -136,10 +201,23 @@ class State {
 
         // UI
         this.points -= this.addPerSecondPrice
-        this.addPerSecondPrice = this.addPerSecondPrice.increase()
+        this.addPerSecondPrice = this.addPerSecondPrice.x2()
 
-        this.addPerSecond = this.addPerSecondNextValue
-        this.addPerSecondNextValue = this.addPerSecondNextValue.increase()
+        switch( this.addPerSecond.toString()[0] ) {
+            case '1':
+                this.addPerSecond += this.addPerSecondNextValue
+                break
+            case '2':
+                this.addPerSecond += this.addPerSecondNextValue
+                this.addPerSecondNextValue *= 2n
+                break
+            case '3':
+            case '5':
+                this.addPerSecond += this.addPerSecondNextValue
+                this.addPerSecondNextValue = this.addPerSecond
+                break
+            default: this.addPerSecond = 1n // 0n
+        }
 
         this.addPerTick = (Number(this.addPerSecond) / 1000) * updatePerMS
 
@@ -185,7 +263,7 @@ class State {
         this.turboTimeout = this.turboSeconds
 
         this.points -= this.turboPrice
-        this.turboPrice = this.turboPrice.increase()
+        this.turboPrice = this.turboPrice.x3()
 
         updateUIPoints()
         updateUITurboPanel()
@@ -195,7 +273,7 @@ class State {
             this.turboOpenBuildings++
             updateBuildingTurbo( this.turboOpenBuildings )
         } else if (this.turboOpenBuildings === 1) {
-            const digits = (this.level.toString()).length
+            const digits = ((this.turboPrice / 2n).toString()).length
             const lightnings = Math.ceil(digits / this.turboDigitsUpgrade)
 
             if (lightnings > this.turboLightnings) {

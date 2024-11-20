@@ -20,50 +20,37 @@ export function initFontStyles() {
             dropShadowDistance: 0,
         }),
 
-        AD: new TextStyle({
-            fontFamily: fonts.light,
-            fontSize: 36,
-            fill: '#00ff00',
-            align: 'center',
-        }),
-
         level: new TextStyle({
-            fontFamily: fonts.light,
-            fontSize: 18,
-            fill: '#00ff00',
+            fontFamily: fonts.normal,
+            fontSize: 32,
+            fill: '#ffff00',
             align: 'center',
         }),
-
+        
         score: new TextStyle({
-            fontFamily: fonts.light,
-            fontSize: 24,
+            fontFamily: fonts.normal,
+            fontSize: 38,
             fill: '#00ff00',
             align: 'center',
         }),
 
         infoBonus: new TextStyle({
-            fontFamily: fonts.light,
-            fontSize: 18,
+            fontFamily: fonts.normal,
+            fontSize: 24,
             fill: '#00ff00',
             align: 'center',
         }),
-
-        infoIcons: new TextStyle({
+        
+        label: new TextStyle({
             fontFamily: fonts.light,
-            fontSize: 32,
-            fill: '#ffff00',
-            align: 'center',
-        }),
-        infoSmallIcons: new TextStyle({
-            fontFamily: fonts.light,
-            fontSize: 24,
+            fontSize: 26,
             fill: '#ffff00',
             align: 'center',
         }),
 
         infoPrice: new TextStyle({
-            fontFamily: fonts.light,
-            fontSize: 16,
+            fontFamily: fonts.normal,
+            fontSize: 20,
             fill: '#ffffff',
             align: 'center',
         }),
