@@ -1,14 +1,5 @@
 import { EventEmitter } from "pixi.js";
 
-/*
-getClick, setAutoCharge, setTurboCharge, requestAD,
-requestUpgradeClick, requestUpgradeAuto, requestStartTurbo, responseStopTurbo
-
-updateUILevel, updateUIPoints, updateUIClickPanel, updateUIAutoPanel, updateUITurboPanel, updateUITurboTimeout
-updateBuildingAuto, updateBuildingTurbo, updateTowerTurbo, updateTowerAuto, updateTowerClick
-drawCharge
-*/
-
 export const EventHub = new EventEmitter()
 
 export const events = {
@@ -38,6 +29,9 @@ export const events = {
     updateTowerTurbo: 'updateTowerTurbo',
     updateTowerAuto: 'updateTowerAuto',
     updateTowerClick: 'updateTowerClick',
+
+    spyBotGetDamage: 'spyBotGetDamage',
+    showBonusUI: 'showBonusUI',
 
     drawCharge: 'drawCharge',
 }
@@ -81,8 +75,8 @@ export function responseStopTurbo() {
 export function updateUILevel() {
     EventHub.emit( events.updateUILevel )
 }
-export function updateUIPoints() {
-    EventHub.emit( events.updateUIPoints )
+export function updateUIPoints( data ) {
+    EventHub.emit( events.updateUIPoints, data )
 }
 export function updateUIClickPanel() {
     EventHub.emit( events.updateUIClickPanel )
@@ -111,6 +105,13 @@ export function updateTowerAuto(data) {
 }
 export function updateTowerClick(data) {
     EventHub.emit( events.updateTowerClick, data )
+}
+
+export function spyBotGetDamage(isDestroyed) {
+    EventHub.emit( events.spyBotGetDamage, isDestroyed )
+}
+export function showBonusUI(text) {
+    EventHub.emit( events.showBonusUI, text )
 }
 
 export function drawCharge(data) {

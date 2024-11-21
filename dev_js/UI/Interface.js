@@ -14,6 +14,7 @@ import { distanceH, distanceV, mainButtonWidth, mainButtonOffsetV,
 import { playVoice } from "../engine/sound"
 import Pointer from "./Pointer"
 import HelpFinger from "./HelpFinger"
+import FlyingText from "./FlyingText"
 
 class Interface extends Container {
     constructor( screenData, state, isLangRu ) {
@@ -22,6 +23,8 @@ class Interface extends Container {
         this.finger = new HelpFinger(this)
 
         this.voices_next_level = isLangRu ? voices.ru_next_level : voices.en_next_level
+        this.voice_extra_electricity = isLangRu ? voices.ru_extra_electricity : voices.en_extra_electricity
+        this.voice_turbo_upgrade = isLangRu ? voices.ru_turbo_upgrade : voices.en_turbo_upgrade
 
         if (state.points === 0n) playVoice(isLangRu ? voices.ru_start_first : voices.en_start_first)
         else playVoice(isLangRu ? voices.ru_start_second : voices.en_start_second)
@@ -93,7 +96,7 @@ class Interface extends Container {
         this.addChild(this.textScore)
 
         // AD
-        this.topButton = new TopButton( isLangRu ? voices.ru_turbo_upgrade : voices.en_turbo_upgrade)
+        this.topButton = new TopButton()
         this.addChild(this.topButton)
 
         // main button
@@ -240,6 +243,7 @@ class Interface extends Container {
         EventHub.on( events.updateUIAutoPanel, this.updateAutoPanel.bind(this) )
         EventHub.on( events.updateUITurboPanel, this.updateTurboPanel.bind(this) )
         EventHub.on( events.updateUITurboTimeout, this.updateTurboTimeout.bind(this) )
+        EventHub.on( events.showBonusUI, this.showBonusText.bind(this) )
 
         EventHub.on( events.needVoiceDoIt, () => playVoice(this.voice_lets_do_it) )
 
@@ -247,7 +251,7 @@ class Interface extends Container {
             setTimeout( () => {
                 this.state.help.delete('button')
                 this.finger.showHelp(this.mainButton)
-            }, 3500 )
+            }, 5000 )
         }
     }
 
@@ -378,12 +382,17 @@ class Interface extends Container {
         playVoice( this.voices_next_level )
     }
     
-    updatePoints() {
+    updatePoints( ADBonus ) {
         this.redrawLevelProgressRect()
 
         // top display
         this.textLevelPrice.text = `${this.state.levelScored.toFormat()} / ${this.state.levelPrice.toFormat()}`
         this.textScore.text = this.state.points.toFormat()
+        if (ADBonus) {
+            playVoice( this.voice_extra_electricity )
+            this.addChild( new Pointer(this.textScore.position) )
+            new FlyingText({ text: '+ ' + ADBonus.toFormat(), style: textStyles.score })
+        }
 
         // check click panel
         this.clickPanel.activation( this.state.points >= this.state.addPerClickPrice )
@@ -409,12 +418,19 @@ class Interface extends Container {
                 this.finger.showHelp(this.turboSwitch)
             }
         }
+
+        if (this.state.help.has('boost')
+        && (this.turboSwitch.state === "active" || this.turboSwitch.state === "on")) {
+            this.state.help.delete('boost')
+            this.finger.showHelp(this.mainButton)
+        }
+    }
+
+    showBonusText(text) {
+        new FlyingText({ text: text, style: textStyles.score })
     }
     
     updateClickPanel() {
-        // updatePoints update this
-        // this.clickPanel.activation( this.state.points >= this.state.addPerClickPrice )
-
         this.textClickBonus.text = '+ ' + this.state.addPerClickNextValue.toFormat()
         this.textClickPrice.text = this.state.addPerClickPrice.toFormat()
         
@@ -424,9 +440,6 @@ class Interface extends Container {
     }
     
     updateAutoPanel() {
-        // updatePoints update this
-        // this.timePanel.activation( this.state.points >= this.state.addPerSecondPrice )
-
         this.textAutoBonus.text = '+ ' + this.state.addPerSecondNextValue.toFormat()
         this.textAutoPrice.text = this.state.addPerSecondPrice.toFormat()
         
@@ -435,22 +448,17 @@ class Interface extends Container {
         this.addChild( new Pointer(this.textInfoAutoAdd.position) )
     }
     
-    updateTurboPanel() {
-        // updatePoints update this
-        /*
-        if (this.state.addRate === 1n) {
-            const turboState = this.state.points >= this.state.turboPrice ? "ready" : "idle"
-            this.turboSwitch.updateState(turboState)
-        }
-        */
-        
+    updateTurboPanel() {        
         this.textInfoTurboBonus.text = `${this.TTXT} x ${this.state.level.toFormat()}`
         this.textInfoTurboPrice.text = this.state.turboPrice.toFormat()
     }
     
     updateTurboTimeout( isUpgrade ) {
         this.textTurboTimer.text = this.state.turboTimeout.toFixed(1)
-        if (isUpgrade) this.addChild( new Pointer(this.textTurboTimer.position) )
+        if (isUpgrade) {
+            this.addChild( new Pointer(this.textTurboTimer.position) )
+            playVoice( this.voice_turbo_upgrade )
+        }
     }
 }
 

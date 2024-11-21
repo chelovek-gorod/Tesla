@@ -36,10 +36,13 @@ export const sprites = {
     broken_car: 'broken_car_250x166px.png',
     euro_cube: 'euro_cube_152x260px.png',
     transformer: 'transformer_162x364px.png',
+
+    spy_bot: 'spy_bot_154x114px_7x8_56_frames.json',
     
     energy: 'energy_160x160px_10x7_70frames.json',
     smoke: 'smoke_192x192px_25frames.json',
     sparks: 'splash_192x192px_20frames.json',
+    explosion: 'explosion_192x192px_5x5_25frames.json',
 }
 const spritesNumber = Object.keys(sprites).length
 for (let sprite in sprites) sprites[sprite] = paths.sprites + sprites[sprite]
@@ -50,6 +53,7 @@ export const sounds = {
     charge: 'se_charge.mp3',
     se_sparks: 'se_sparks.mp3',
     sticks: 'se_sticks.mp3',
+    se_explosion: 'se_explosion.mp3',
 }
 const soundsNumber = Object.keys(sounds).length
 for (let se in sounds) sounds[se] = paths.sounds + sounds[se]
@@ -65,6 +69,9 @@ export const voices = {
     en_no_money: 'voice_en_no_money.mp3',
     en_not_available: 'voice_en_not_available.mp3',
     en_turbo_upgrade: 'voice_en_turbo_upgrade.mp3',
+    en_extra_electricity: 'voice_en_extra_electricity.mp3',
+    en_spy_kill: 'voice_en_spy_kill.mp3',
+    en_spy: 'voice_en_spy.mp3',
 
     ru_start_first: 'voice_ru_start_first.mp3',
     ru_start_second: 'voice_ru_start_second.mp3',
@@ -76,6 +83,9 @@ export const voices = {
     ru_no_money: 'voice_ru_no_money.mp3',
     ru_not_available: 'voice_ru_not_available.mp3',
     ru_turbo_upgrade: 'voice_ru_turbo_upgrade.mp3',
+    ru_extra_electricity: 'voice_ru_extra_electricity.mp3',
+    ru_spy_kill: 'voice_ru_spy_kill.mp3',
+    ru_spy: 'voice_ru_spy.mp3',
 }
 const voicesNumber = Object.keys(voices).length
 for (let vs in voices) voices[vs] = paths.voices + voices[vs]

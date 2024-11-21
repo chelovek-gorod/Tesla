@@ -11,6 +11,8 @@ import Thing from "./Things"
 import RotorGenerator from "./RotorGenerator"
 import Smoke from './Smoke'
 import Sparks from "./Sparks"
+import SpyBot from "./SpyBot"
+import { voices } from "../engine/loader"
 
 // 0 - no effect (95%); 1 - sparks(2%); 2 - sparks and smoke (3%)
 const effects = Array(100).fill(0).fill(1, 95).fill(2, 97)
@@ -23,7 +25,7 @@ function getEffect() {
 }
 
 class ActionScene extends Container {
-    constructor( screenData, state ) {
+    constructor( screenData, state, isLangRu ) {
         super()
 
         this.state = state
@@ -128,6 +130,12 @@ class ActionScene extends Container {
         }
         this.mainButtonLT = new LightningTower(initDataButtonLT)
         this.addChild(this.mainButtonLT)
+
+        const spyDetectedVoice = isLangRu ? voices.ru_spy : voices.en_spy
+        const spyFirstVoice = isLangRu ? voices.ru_spy_kill : voices.en_spy_kill
+        const stateHelpRemove = (this.state.help.has('spy')) ? () => this.state.help.delete('spy') : null
+        this.spyBot = new SpyBot(spyDetectedVoice, spyFirstVoice, stateHelpRemove)
+        this.addChild(this.spyBot)
         
         this.screenResize( screenData )
         EventHub.on( events.screenResize, this.screenResize.bind(this) )
@@ -192,6 +200,9 @@ class ActionScene extends Container {
 
         this.bbWG2.updateOnMap(mapScale, mapWidth, mapHeight)
         this.WG2LT.updateOnMap(mapScale, mapWidth, mapHeight)
+
+        const spyBotBottomPoint = this.position.y - (this.position.y - mapHeight) * 0.5
+        this.spyBot.updateOnMap(mapScale, mapWidth, -spyBotBottomPoint, -this.position.y)
     }
 
     lightning(data) {

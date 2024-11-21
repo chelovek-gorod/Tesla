@@ -1,17 +1,17 @@
 import { Text } from 'pixi.js'
-import { textStyles } from '../fonts'
-import { getAppScreen, tickerAdd, tickerRemove, removeSprite } from './application'
-import { tick } from './functions'
+import { getAppScreen, tickerAdd, tickerRemove, sceneAdd, sceneRemove } from '../engine/application'
+import { tick } from '../engine/functions'
 
-const moveTime = 2400
+const moveTime = 45000
 const scaleRate = 0.5 / ((moveTime / 2) / tick)
 const startTime = moveTime / 4
 const alphaAdd = 1 / (startTime / tick)
 const alphaSub = alphaAdd * 2
 
 class FlyingText extends Text {
-    constructor(text) {
-        super(text, textStyles.fly)
+    // { text style }
+    constructor(textSettings) {
+        super(textSettings)
         this.anchor.set(0.5)
         this.scale.x = 0.5
         this.scale.y = 0.5
@@ -25,17 +25,19 @@ class FlyingText extends Text {
         this.halfPath = halfBoardSize / 2
         this.speed = halfBoardSize / (moveTime / tick)
         tickerAdd(this)
+        sceneAdd(this)
     }
 
-    tick( delta ) {
-        this.position.y -= this.speed * delta
-        this.scale.x = this.scale.y = this.scale.x += scaleRate * delta
-        if (this.position.y > this.halfPath) this.alpha += alphaAdd * delta
+    tick( time ) {
+        this.position.y -= this.speed * time.elapsedMS
+        this.scale.x = this.scale.y = this.scale.x += scaleRate * time.elapsedMS
+        if (this.position.y > this.halfPath) this.alpha += alphaAdd * time.elapsedMS
         else {
-            this.alpha -= alphaSub * delta
+            this.alpha -= alphaSub * time.elapsedMS
             if (this.alpha < 0) {
                 tickerRemove(this)
-                removeSprite(this)
+                sceneRemove(this)
+                this.destroy()
             }
         }
     }

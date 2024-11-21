@@ -1,4 +1,4 @@
-import { EventHub, events, updateUILevel, updateUIPoints, needVoiceDoIt, 
+import { EventHub, events, updateUILevel, updateUIPoints, needVoiceDoIt, showBonusUI,
     updateUIClickPanel, updateUIAutoPanel, updateUITurboPanel, updateUITurboTimeout,
     updateBuildingAuto, updateBuildingTurbo, updateTowerTurbo, setTurboCharge,
     updateTowerAuto, updateTowerClick, setAutoCharge, responseStopTurbo } from './engine/events'
@@ -34,7 +34,9 @@ const maxLightningsFromTower = 5
 
 class State {
     constructor(save = null) {
-        this.help = new Set( save ? save.help : ['button', 'auto', 'click', 'turbo'] )
+        this.help = new Set( save ? save.help : ['button', 'auto', 'click', 'turbo', 'boost', 'spy'] )
+
+        this.isADBonusTurboSeconds = save ? save.isADBonusTurboSeconds : false
 
         this.points = save ? save.points : 0n
         this.addRate = 1n // x turbo in TURBO UES
@@ -69,6 +71,8 @@ class State {
 
         EventHub.on( events.requestAD, this.showAD.bind(this) )
 
+        EventHub.on( events.spyBotGetDamage, this.spyBotGetDamage.bind(this))
+
         this.addPerTick = (Number(this.addPerSecond) / 1000) * updatePerMS
         this.tickReserve = 0
         this.lastTimeStamp = 0
@@ -78,6 +82,13 @@ class State {
     getButtonClick() {
         timeoutVoiceLetsDoIt = awaitVoiceLetsDoIt
         this.getPoints(this.addPerClick)
+    }
+
+    spyBotGetDamage(isDestroyed) {
+        const points = isDestroyed ? this.addPerClick * 10n : this.addPerClick * 5n
+        this.getPoints(points)
+
+        showBonusUI('+ ' + points.toFormat())
     }
 
     tick(time) {
@@ -126,27 +137,42 @@ class State {
         this.points += addPoints
         
         this.levelScored += addPoints
-        if (this.levelScored >= this.levelPrice) {
-            this.level++
-            this.levelScored -= this.levelPrice
-            this.levelPrice = this.levelPrice.x5()
-
-            if (this.addRate > 1n) this.addRate = this.level
-
-            updateUILevel()
-
-            this.updateTurboLightnings()
-        }
+        this.checkLevel()
 
         updateUIPoints()
 
         if (this.addRate > 1n) setTurboCharge()
     }
 
+    checkLevel() {
+        if (this.levelScored < this.levelPrice) return
+
+        this.level++
+        this.levelScored -= this.levelPrice
+        this.levelPrice = this.levelPrice.x5()
+
+        if (this.addRate > 1n) this.addRate = this.level
+
+        updateUILevel()
+
+        this.updateTurboLightnings()
+    }
+
     showAD() {
-        this.turboSeconds += 1
-        this.turboTimeout = this.turboSeconds
-        updateUITurboTimeout( true )
+        if (this.isADBonusTurboSeconds) {
+            this.turboSeconds += 1
+            this.turboTimeout = this.turboSeconds
+            updateUITurboTimeout( true )
+        } else {
+            const bonus = (this.addPerClickPrice + this.addPerSecondPrice + this.turboPrice) / 6n
+            this.points += bonus
+        
+            this.levelScored += bonus
+            this.checkLevel()
+
+            updateUIPoints( bonus )
+        }
+        this.isADBonusTurboSeconds = !this.isADBonusTurboSeconds
     }
 
     increaseValue(value, counter) {
