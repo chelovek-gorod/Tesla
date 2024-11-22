@@ -88,7 +88,7 @@ class State {
         const points = isDestroyed ? this.addPerClick * 10n : this.addPerClick * 5n
         this.getPoints(points)
 
-        showBonusUI('+ ' + points.toFormat())
+        showBonusUI('+ ' + (this.addRate * points).toFormat())
     }
 
     tick(time) {

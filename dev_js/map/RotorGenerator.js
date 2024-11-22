@@ -15,7 +15,8 @@ class RotorGenerator extends AnimatedSprite {
         this.sizeScale = parentBox.sizeScale
         this.offsetRate = {x: parentBox.offsetRate.x, y: parentBox.offsetRate.y}
 
-        parentBox.parent.addChild(this)
+        const index = parentBox.parent.getChildIndex(parentBox)
+        parentBox.parent.addChildAt(this, index)
         parentBox.parent.addChild( new Smoke(parentBox.position, parentBox.scale.x * 2, true))
         parentBox.destroy()
 

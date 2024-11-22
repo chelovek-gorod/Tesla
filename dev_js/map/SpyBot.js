@@ -43,7 +43,8 @@ class SpyBot extends AnimatedSprite {
         this.eventMode = 'static'
         this.on('pointerdown', this.getClick.bind(this) )
 
-        this.flyTimeout = (stateHelpRemove) ? botFlyTimeout * 4 : botFlyTimeout
+        this.flyTimeout = (stateHelpRemove) ? botFlyTimeout * 3 : botFlyTimeout
+
 
         setTimeout( () => this.showBot(), (stateHelpRemove) ? botAwaitTimeout * 9 : botAwaitTimeout )
     }
@@ -110,7 +111,7 @@ class SpyBot extends AnimatedSprite {
         
         this.isVisible = true
         this.play()
-        setTimeout( () => this.isVisible = false, botFlyTimeout )
+        setTimeout( () => this.isVisible = false, this.flyTimeout )
         tickerAdd(this)
 
         playVoice(this.spyDetectedVoice)

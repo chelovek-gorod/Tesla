@@ -18,7 +18,8 @@ export const sprites = {
     moon: 'moon_212x212px.png',
     snow_bg: 'snow_bg_2048x920.png',
 
-    top_button: 'top_button_84x144px_2x1_2frames.json',
+    ad_button: 'ad_button_84x144px_2x1_2frames.json',
+    restart_button: 'restart_button_84x124px.png',
     top_screen: 'top_screen_672x126px.png',
     main_button: 'main_button_178x168px_1x2_2frames.json',
     panel: 'panel_394x164px_1x2_2frames.json',
@@ -32,8 +33,14 @@ export const sprites = {
     lightning_tower: 'lightning_tower_204x490px_2x1_2frames.json',
     rotor_generator: 'rotor_generator_168x200px_4x4_16frames.json',
     wind_generator: 'wind_generator_256x268px_5x2_10frames.json',
+    time_machine_base: 'time_machine_base_200x220px_4x1_4frames.json',
+    time_machine: 'time_machine_200x562px_10x3_28frames.json',
+    time_machine_lamps: 'time_machine_lamps_98x84px_1x7_7frames.json',
+    time_machine_progress: 'time_machine_progress_98x84px_4x8_32frames.json',
         
     broken_car: 'broken_car_250x166px.png',
+    truck: 'truck_364x264px.png',
+    // truck: 'train.png',
     euro_cube: 'euro_cube_152x260px.png',
     transformer: 'transformer_162x364px.png',
 

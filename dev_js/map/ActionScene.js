@@ -13,9 +13,10 @@ import Smoke from './Smoke'
 import Sparks from "./Sparks"
 import SpyBot from "./SpyBot"
 import { voices } from "../engine/loader"
+import TimeMachine from "./TimeMachine"
 
 // 0 - no effect (95%); 1 - sparks(2%); 2 - sparks and smoke (3%)
-const effects = Array(100).fill(0).fill(1, 95).fill(2, 97)
+const effects = Array(300).fill(0).fill(1, 285).fill(2, 295)
 effects.sort(() => Math.random() - 0.5)
 let effectIndex = Math.floor( Math.random() * effects.length )
 function getEffect() {
@@ -39,16 +40,16 @@ class ActionScene extends Container {
         //this.backRect = new Graphics()
         //this.addChild(this.backRect)
 
-        this.car = new Thing('broken_car', 0.7, {x: -0.36, y: -0.6})
-        this.addChild(this.car)
+        this.truck = new Thing('truck', 0.55, {x: -0.37, y: -0.82})
+        this.addChild(this.truck)
 
-        this.cube = new Thing('euro_cube', 0.6, {x: 0.12, y: -0.9})
+        this.cube = new Thing('euro_cube', 0.75, {x: 0.1, y: -0.8})
         this.addChild(this.cube)
 
         // right
         const initDataRG1LT = {
             scale: 0.55,
-            offsetRate: {x: 0.38, y: -0.85},
+            offsetRate: {x: 0.37, y: -0.88},
             canvasIndex: 1,
             dischargeEventName: events.setTurboCharge,
             upgradeEventName: events.updateTowerTurbo,
@@ -62,8 +63,8 @@ class ActionScene extends Container {
         
         // left
         const initDataWG1LT = {
-            scale: 0.65,
-            offsetRate: {x: -0.25, y: -0.8},
+            scale: 0.6,
+            offsetRate: {x: -0.12, y: -0.84},
             canvasIndex: 1,
             dischargeEventName: events.setAutoCharge,
             upgradeEventName: events.updateTowerAuto,
@@ -72,13 +73,18 @@ class ActionScene extends Container {
         }
         this.WG1LT = new LightningTower(initDataWG1LT)
         this.addChild(this.WG1LT)
-        this.bbWG1 = new Thing('building_box', 0.7, {x: -0.18, y: -0.7})
+        this.bbWG1 = new Thing('building_box', 0.75, {x: -0.18, y: -0.7})
         this.addChild(this.bbWG1)
 
+        this.timeMachine = new TimeMachine(1, {x: -0.3, y: -0.35}, true)
+        this.addChild(this.timeMachine)
+
         // left
+        this.bbRG2 = new Thing('building_box', 0.9, {x: -0.42, y: -0.2})
+        this.addChild(this.bbRG2)
         const initDataRG2LT = {
-            scale: 0.8,
-            offsetRate: {x: -0.52, y: -0.25},
+            scale: 0.9,
+            offsetRate: {x: -0.52, y: -0.12},
             canvasIndex: 0,
             dischargeEventName: events.setTurboCharge,
             upgradeEventName: events.updateTowerTurbo,
@@ -87,8 +93,6 @@ class ActionScene extends Container {
         }
         this.RG2LT = new LightningTower(initDataRG2LT)
         this.addChild(this.RG2LT)
-        this.bbRG2 = new Thing('building_box', 0.85, {x: -0.42, y: -0.2})
-        this.addChild(this.bbRG2)
 
         // right
         const initDataWG2LT = {
@@ -102,7 +106,7 @@ class ActionScene extends Container {
         }
         this.WG2LT = new LightningTower(initDataWG2LT)
         this.addChild(this.WG2LT)
-        this.bbWG2 = new Thing('building_box', 0.9, {x: 0.42, y: -0.4})
+        this.bbWG2 = new Thing('building_box', 0.8, {x: 0.45, y: -0.5})
         this.addChild(this.bbWG2)
 
         this.lightningCanvasSecond = new Graphics()
@@ -121,7 +125,7 @@ class ActionScene extends Container {
 
         const initDataButtonLT = {
             scale: 1,
-            offsetRate: {x: 0.25, y: 0.1},
+            offsetRate: {x: 0.20, y: 0.1},
             canvasIndex: 0,
             dischargeEventName: events.getClick,
             upgradeEventName: events.updateTowerClick,
@@ -130,6 +134,9 @@ class ActionScene extends Container {
         }
         this.mainButtonLT = new LightningTower(initDataButtonLT)
         this.addChild(this.mainButtonLT)
+
+        this.car = new Thing('broken_car', 1, {x: 0.36, y: -0.12})
+        this.addChild(this.car)
 
         const spyDetectedVoice = isLangRu ? voices.ru_spy : voices.en_spy
         const spyFirstVoice = isLangRu ? voices.ru_spy_kill : voices.en_spy_kill
@@ -184,8 +191,11 @@ class ActionScene extends Container {
         this.mainButtonLT.updateOnMap(mapScale, mapWidth, mapHeight)
         this.teslaTower.updateOnMap(mapScale, mapWidth, mapHeight)
 
+        this.timeMachine.updateOnMap(mapScale, mapWidth, mapHeight)
+
         this.car.updateOnMap(mapScale, mapWidth, mapHeight)
         this.cube.updateOnMap(mapScale, mapWidth, mapHeight)
+        this.truck.updateOnMap(mapScale, mapWidth, mapHeight)
 
         this.transformer.updateOnMap(mapScale, mapWidth, mapHeight)
 

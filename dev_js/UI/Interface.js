@@ -5,7 +5,8 @@ import { sprites, voices } from "../engine/loader"
 import LevelPanel from "./LevelPanel"
 import MainButton from "./MainButton"
 import Panel from "./Panel"
-import TopButton from "./TopButton"
+import AdButton from "./AdButton"
+import RestartButton from "./RestartButton"
 import TurboSwitch from "./TurboSwitch"
 import Wire from "./Wire"
 import { distanceH, distanceV, mainButtonWidth, mainButtonOffsetV,
@@ -96,8 +97,12 @@ class Interface extends Container {
         this.addChild(this.textScore)
 
         // AD
-        this.topButton = new TopButton()
-        this.addChild(this.topButton)
+        this.adButton = new AdButton()
+        this.addChild(this.adButton)
+
+        // Restart
+        this.restartButton = new RestartButton()
+        this.addChild(this.restartButton)
 
         // main button
         this.mainButton = new MainButton()
@@ -351,8 +356,12 @@ class Interface extends Container {
 
         this.redrawLevelProgressRect()
 
-        this.topButton.position.x = screenData.centerX / scale - distanceH
-        this.topButton.position.y = -screenData.height / scale
+        const topButtonsY = -screenData.height / scale
+        this.adButton.position.x = screenData.centerX / scale - distanceH
+        this.adButton.position.y = topButtonsY
+
+        this.restartButton.position.x = -screenData.centerX / scale + distanceH
+        this.restartButton.position.y = topButtonsY - distanceH
     }
 
     redrawLevelProgressRect() {
