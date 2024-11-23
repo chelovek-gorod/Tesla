@@ -52,6 +52,10 @@ class State {
         this.turboOpenBuildings = save ? save.turboOpenBuildings : 0 // MAX 2
         this.turboLightnings = save ? save.turboLightningInBuilding : 1
 
+        this.timeMachineLamps = save ? save.timeMachineLamps : 0
+        this.timeMachineRate = 25n
+        this.isTimeMachineActivated = false
+
         this.addPerClick = save ? save.addClick : 1n
         this.addPerClickNextValue = save ? save.addPerClickNextValue : 1n
         this.addPerClickPrice = save ? save.addPerClickPrice : 500n // 500n
@@ -68,6 +72,8 @@ class State {
         EventHub.on( events.requestUpgradeClick, this.upgradeClick.bind(this) )
         EventHub.on( events.requestUpgradeAuto, this.upgradeAuto.bind(this) )
         EventHub.on( events.requestStartTurbo, this.startTurbo.bind(this) )
+
+        EventHub.on( events.timeAcceleration, (isOn) => this.isTimeMachineActivated = isOn )
 
         EventHub.on( events.requestAD, this.showAD.bind(this) )
 
@@ -109,7 +115,13 @@ class State {
                 if (this.tickReserve > 1) {
                     const add = Math.floor(this.tickReserve)
                     this.tickReserve -= add
-                    this.getPoints( BigInt(add) )
+                  
+                    if (this.isTimeMachineActivated) {
+                        this.getPoints( BigInt(add) * this.timeMachineRate )
+                    } else {
+                        this.getPoints( BigInt(add) )
+                    }
+
                     setAutoCharge()
                 }
             }
@@ -291,7 +303,8 @@ class State {
                 this.autoLightnings = maxLightningsFromTower
             }
         }
-        updateBuildingAuto( this.autoOpenBuildings )
+        
+        updateBuildingAuto(0)
     }
 
     updateTurboLightnings() {
@@ -314,7 +327,7 @@ class State {
                 this.turboLightnings = maxLightningsFromTower
             }
         }
-        updateBuildingTurbo( this.turboOpenBuildings )
+        updateBuildingTurbo( 0 )
     }
 }
 

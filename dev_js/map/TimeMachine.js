@@ -1,19 +1,31 @@
 import { Container, AnimatedSprite } from "pixi.js"
 import { sprites } from "../engine/loader"
-import { EventHub, events, drawCharge } from '../engine/events'
+import { EventHub, events, drawCharge, timeAcceleration, drawSkyCharge } from '../engine/events'
 import Smoke from "./Smoke"
+import { tickerAdd, tickerRemove } from "../engine/application"
+
+const lampFrames = 7
+const energyFrames = 32
+const buildLevel = 5
+
+const timeAccelerationTimeout = 10 * 1000
 
 class TimeMachine extends Container {
-    constructor(sizeScale, offsetRate, isOnBuild = true) {
+    // settings = {lightnings, lamps, level}
+    constructor(sizeScale, offsetRate, settings) {
         super()
 
-        this.isOnBuild = isOnBuild
-        this.mainIndex = 0
-        this.lightningCount = 1
+        this.isOnBuild = settings.level < buildLevel ? true : false
+        this.mainIndex = settings.level < buildLevel ? settings.level - 1 : 0
+        this.lightningCount = settings.lightnings
         this.drawScale = sizeScale
 
+        this.activeLamps = settings.lamps
+
+        this.isActive = false
+
         this.tower = new AnimatedSprite(sprites.time_machine.animations.go)
-        this.tower.animationSpeed = 1
+        this.tower.animationSpeed = 0
         if (this.isOnBuild === false) {
             this.tower.gotoAndStop(this.mainIndex)
             this.addChild(this.tower)
@@ -23,7 +35,7 @@ class TimeMachine extends Container {
         this.lamps.position.set(-44, -88)
         this.lamps.animationSpeed = 0
         if (this.isOnBuild === false) {
-            this.lamps.gotoAndStop(6)
+            this.lamps.gotoAndStop(this.activeLamps)
             this.addChild(this.lamps)
         }
 
@@ -88,13 +100,38 @@ class TimeMachine extends Container {
     }
 
     getClick() {
-        if (this.isOnBuild) return
+        if (this.isOnBuild || this.isActive) return
 
         this.mainIndex++
-        if (this.mainIndex > 31) this.mainIndex = 0
+        if (this.mainIndex === energyFrames) {
+            this.mainIndex = 0
+            this.activeLamps++
+            if( this.activeLamps === lampFrames ) {
+                this.activeLamps = 0
+                this.activation()
+            }
+            this.lamps.gotoAndStop(this.activeLamps)
+        }
         this.progress.gotoAndStop(this.mainIndex)
 
         drawCharge({point: this.lightning, count: this.lightningCount, scale: this.drawScale})
+    }
+
+    activation() {
+        this.isActive = true
+        timeAcceleration(this.isActive)
+        setTimeout( () => this.deactivation(), timeAccelerationTimeout )
+        tickerAdd(this)
+    }
+
+    deactivation() {
+        this.isActive = false
+        timeAcceleration(this.isActive)
+        tickerRemove(this)
+    }
+
+    tick(time) {
+        drawSkyCharge({point: this.lightning, count: this.lightningCount, scale: this.drawScale})
     }
  }
 

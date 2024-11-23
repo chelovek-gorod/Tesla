@@ -76,7 +76,10 @@ class ActionScene extends Container {
         this.bbWG1 = new Thing('building_box', 0.75, {x: -0.18, y: -0.7})
         this.addChild(this.bbWG1)
 
-        this.timeMachine = new TimeMachine(1, {x: -0.3, y: -0.35}, true)
+        const timeMachineSettings = {
+            lightnings: 1, lamps: state.timeMachineLamps, level: Number(state.level)
+        }
+        this.timeMachine = new TimeMachine(1, {x: -0.3, y: -0.35}, timeMachineSettings)
         this.addChild(this.timeMachine)
 
         // left
@@ -151,6 +154,7 @@ class ActionScene extends Container {
         EventHub.on( events.updateBuildingTurbo, this.updateBuildingTurbo.bind(this) )
 
         EventHub.on( events.drawCharge, this.lightning.bind(this))
+        EventHub.on( events.drawSkyCharge, this.skyLightning.bind(this))
         this.canvases = [this.lightningCanvasFirst, this.lightningCanvasSecond]
         tickerAdd(this)
     }
@@ -223,6 +227,15 @@ class ActionScene extends Container {
         if (effectSize > 1) this.addChild( new Smoke( data.point.position, data.scale ) )
     }
 
+    skyLightning(data) {
+        const topPoint = {position: {x: data.point.position.x, y: -this.position.y}}
+        drawLightning(data.point, topPoint, this.canvases[data.point.index])
+
+        const effectSize = getEffect()
+        if (effectSize > 0) this.addChild( new Sparks( data.point.position, data.scale ) )
+        if (effectSize > 1) this.addChild( new Smoke( data.point.position, data.scale ) )
+    }
+
     tick() {
         this.lightningCanvasSecond.clear()
         this.lightningCanvasFirst.clear()
@@ -239,8 +252,6 @@ class ActionScene extends Container {
         } else if (windOpenIndex === 2) {
             this.bbWG2 = new WindGenerator(this.bbWG2)
             this.WG2LT.activate()
-        } else {
-            console.error(`get wrong WindGeneratorIndex in ActionScene.js: ${windOpenIndex}`)
         }
     }
 

@@ -4,16 +4,23 @@ import { EventHub, events } from '../engine/events'
 import { tickerAdd } from "../engine/application"
 
 const speed = 0.005
+const speedMax = 2.5
+const accelerationStep = 0.0001
 
 class Moon extends Sprite {
     constructor( screenData ) {
         super( sprites.moon )
         this.anchor.set(0, 1)
 
+        this.speed = speed
+        this.isAccelerated = false
+
         this.position.x = screenData.width // set for reset in screenResize()
 
         this.screenResize( screenData )
         EventHub.on( events.screenResize, this.screenResize.bind(this) )
+
+        EventHub.on( events.timeAcceleration, this.timeAcceleration.bind(this) )
 
         tickerAdd(this)
     }
@@ -30,8 +37,21 @@ class Moon extends Sprite {
     }
 
     tick(time) {
-        this.position.y -= speed * time.elapsedMS
+        this.position.y -= this.speed * time.elapsedMS
         if (this.position.y <= 0) this.restart()
+
+        if (this.isAccelerated) {
+            if (this.speed < speedMax) this.speed += accelerationStep * time.elapsedMS
+        } else {
+            if (this.speed > speed) {
+                this.speed -= accelerationStep * time.elapsedMS
+                if (this.speed < speed) this.speed = speed
+            }
+        }
+    }
+
+    timeAcceleration( isAccelerated ) {
+        this.isAccelerated = isAccelerated
     }
 }
 

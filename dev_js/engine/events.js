@@ -34,6 +34,8 @@ export const events = {
     showBonusUI: 'showBonusUI',
 
     drawCharge: 'drawCharge',
+    drawSkyCharge: 'drawSkyCharge',
+    timeAcceleration: 'timeAcceleration'
 }
 
 export function screenResize( data ) {
@@ -117,7 +119,13 @@ export function showBonusUI(text) {
 export function drawCharge(data) {
     EventHub.emit( events.drawCharge, data )
 }
+export function drawSkyCharge(data) {
+    EventHub.emit( events.drawSkyCharge, data )
+}
 
+export function timeAcceleration( isOn ) {
+    EventHub.emit( events.timeAcceleration, isOn )
+}
 
 /*
 USAGE
