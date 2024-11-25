@@ -1,0 +1,64 @@
+{
+	"frames": {
+		"off": {
+			"frame": {
+				"x": 0,
+				"y": 0,
+				"w": 84,
+				"h": 280
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 84,
+				"h": 280
+			},
+			"sourceSize": {
+				"w": 84,
+				"h": 280
+			},
+			"anchor": {
+				"x": 0.5,
+				"y": 1
+			}
+		},
+		"on": {
+			"frame": {
+				"x": 84,
+				"y": 0,
+				"w": 84,
+				"h": 280
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 84,
+				"h": 280
+			},
+			"sourceSize": {
+				"w": 84,
+				"h": 280
+			},
+			"anchor": {
+				"x": 0.5,
+				"y": 1
+			}
+		}
+	},
+	"animations": {
+		"go": [ "off", "on" ]
+	},
+	"meta": {
+		"image": "top_button_84x280px_2x1_2frames.png",
+		"format": "RGBA8888",
+		"size": {
+			"w": 168,
+			"h": 280
+		},
+		"scale": "1"
+	}
+}
