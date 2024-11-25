@@ -1,8 +1,9 @@
 import { Container, AnimatedSprite } from "pixi.js"
-import { sprites } from "../engine/loader"
+import { sounds, sprites, voices } from "../engine/loader"
 import { EventHub, events, drawCharge, timeAcceleration, drawSkyCharge } from '../engine/events'
 import Smoke from "./Smoke"
 import { tickerAdd, tickerRemove } from "../engine/application"
+import { playSound, playVoice } from "../engine/sound"
 
 const lampFrames = 7
 const energyFrames = 32
@@ -12,8 +13,12 @@ const timeAccelerationTimeout = 10 * 1000
 
 class TimeMachine extends Container {
     // settings = {lightnings, lamps, level}
-    constructor(sizeScale, offsetRate, settings) {
+    constructor(sizeScale, offsetRate, settings, timeMachineVoices) {
         super()
+
+        this.voiceBuild1 = timeMachineVoices.build1
+        this.voiceBuild2 = timeMachineVoices.build2
+        this.voiceStart = timeMachineVoices.start
 
         this.isOnBuild = settings.level < buildLevel ? true : false
         this.mainIndex = settings.level < buildLevel ? settings.level - 1 : 0
@@ -24,10 +29,11 @@ class TimeMachine extends Container {
 
         this.isActive = false
 
-        this.tower = new AnimatedSprite(sprites.time_machine.animations.go)
+        this.tower = new AnimatedSprite(sprites.time_machine.animations.on)
         this.tower.animationSpeed = 0
+        this.tower.loop = false
         if (this.isOnBuild === false) {
-            this.tower.gotoAndStop(this.mainIndex)
+            this.tower.gotoAndStop(0)
             this.addChild(this.tower)
         }
 
@@ -55,7 +61,7 @@ class TimeMachine extends Container {
             this.addChild(this.base)
         }
 
-        this.lightning = { position: {x:0, y:0}, index: 0 }
+        this.lightning = { position: {x:0, y:0}, index: 1 }
         
         this.sizeScale = sizeScale
         this.offsetRate = {x: offsetRate.x, y: offsetRate.y}
@@ -82,14 +88,17 @@ class TimeMachine extends Container {
             this.isOnBuild = false
             this.removeChild(this.base)
 
-            this.tower.gotoAndStop(this.mainIndex)
+            this.tower.gotoAndStop(0)
             this.addChild(this.tower)
 
-            this.lamps.gotoAndStop(this.mainIndex)
+            this.lamps.gotoAndStop(0)
             this.addChild(this.lamps)
 
-            this.progress.gotoAndStop(this.mainIndex)
+            this.progress.gotoAndStop(0)
             this.addChild(this.progress)
+
+            playVoice(voices[this.voiceBuild1])
+            playVoice(voices[this.voiceBuild2])
         } else {
             this.base.gotoAndStop(this.mainIndex)
         }
@@ -118,16 +127,38 @@ class TimeMachine extends Container {
     }
 
     activation() {
+        playVoice(voices[this.voiceStart])
         this.isActive = true
-        timeAcceleration(this.isActive)
-        setTimeout( () => this.deactivation(), timeAccelerationTimeout )
-        tickerAdd(this)
+        this.tower.animationSpeed = 0.5
+        this.tower.gotoAndPlay(0)
+        this.tower.onComplete = () => {
+            timeAcceleration(this.isActive)
+            setTimeout( () => this.deactivation(), timeAccelerationTimeout )
+            tickerAdd(this)
+            playSound(sounds.se_time_acc)
+            setTimeout( () => this.checkSound(), 2000 )
+        }
+    }
+
+    checkSound() {
+        if (!this.isActive) return
+
+        playSound(sounds.se_time_acc)
+        setTimeout( () => this.checkSound(), 2000 )
     }
 
     deactivation() {
         this.isActive = false
         timeAcceleration(this.isActive)
         tickerRemove(this)
+        this.tower.textures = sprites.time_machine.animations.off
+        this.tower.gotoAndPlay(0)
+        this.tower.onComplete = () => {
+            timeAcceleration(this.isActive)
+            this.tower.animationSpeed = 0
+            this.tower.textures = sprites.time_machine.animations.on
+            this.tower.gotoAndStop(0)
+        }
     }
 
     tick(time) {

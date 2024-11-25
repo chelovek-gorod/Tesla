@@ -14,7 +14,7 @@ export function checkLangRu() {
 
 export function startGame() {
     const screenData = getAppScreen()
-    const state = new State()
+    const state = new State(null, isLangRu)
 
     sceneAdd( new Background(screenData) )
     sceneAdd( new ActionScene(screenData, state, isLangRu) )

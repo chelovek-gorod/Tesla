@@ -5,7 +5,8 @@ import { tickerAdd } from "../engine/application"
 
 const speed = 0.002
 const speedMax = 1
-const accelerationStep = 0.0002
+const accelerationRate = 1.035
+const slowdownRate = 0.9662 // 1 / accelerationRate
 const tileHeight = 400
 
 class NightSky extends TilingSprite {
@@ -36,10 +37,10 @@ class NightSky extends TilingSprite {
         if (this.position.y <= -tileHeight) this.position.y += tileHeight
 
         if (this.isAccelerated) {
-            if (this.speed < speedMax) this.speed += accelerationStep * time.elapsedMS
+            if (this.speed < speedMax) this.speed *= accelerationRate * time.deltaTime
         } else {
             if (this.speed > speed) {
-                this.speed -= accelerationStep * time.elapsedMS
+                this.speed *= slowdownRate * time.deltaTime
                 if (this.speed < speed) this.speed = speed
             }
         }

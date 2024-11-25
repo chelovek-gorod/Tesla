@@ -74,8 +74,8 @@ export function responseStopTurbo() {
     EventHub.emit( events.responseStopTurbo )
 }
 
-export function updateUILevel() {
-    EventHub.emit( events.updateUILevel )
+export function updateUILevel(level) {
+    EventHub.emit( events.updateUILevel, level )
 }
 export function updateUIPoints( data ) {
     EventHub.emit( events.updateUIPoints, data )

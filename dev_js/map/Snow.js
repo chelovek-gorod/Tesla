@@ -4,11 +4,14 @@ import { tickerAdd } from "../engine/application"
 import { moveSprite } from "../engine/functions"
 
 let isSnow = true
+let isAcceleratedTime = false
 const snowTimeout = 30000
 function updateSnowCount() {
     isSnow = !isSnow
     setTimeout(updateSnowCount, snowTimeout + Math.floor(Math.random() * snowTimeout))
 }
+
+EventHub.on( events.timeAcceleration, (isAccelerated) => isAcceleratedTime = isAccelerated )
 
 let snowflakes = []
 let reserve = []
@@ -61,6 +64,8 @@ class Snowflake {
             this.isExist = false
             reserve.push(this)
         }
+
+        if (isAcceleratedTime) this.speed *= 2
     }
 }
 

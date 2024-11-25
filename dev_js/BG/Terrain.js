@@ -6,8 +6,8 @@ import { EventHub, events } from '../engine/events'
 import { controlSizeH, controlSizeV, controlHeightH, controlHeightV,
     imageSnowWidth, imageSnowHeight, mapRate, mapMaxScreenHeightRate } from "../constants"
 
-const brightStep = 0.0002
 const minBright = 0.2
+const brightStep = 0.0003
 
 class Terrain extends Container {
     constructor( screenData ) {

@@ -33,7 +33,7 @@ let timeoutVoiceLetsDoIt = awaitVoiceLetsDoIt
 const maxLightningsFromTower = 5
 
 class State {
-    constructor(save = null) {
+    constructor(save = null, isLangRu) {
         this.help = new Set( save ? save.help : ['button', 'auto', 'click', 'turbo', 'boost', 'spy'] )
 
         this.isADBonusTurboSeconds = save ? save.isADBonusTurboSeconds : false
@@ -48,6 +48,7 @@ class State {
         this.turboSeconds = save ? save.turboSeconds : 10
         this.turboPrice = save ? save.turboPrice : 1000n // 5000n
         this.turboTimeout = 0
+        this.turboBonusText = isLangRu ? 'Бонус за клик x' : 'Bonus per click x'
 
         this.turboOpenBuildings = save ? save.turboOpenBuildings : 0 // MAX 2
         this.turboLightnings = save ? save.turboLightningInBuilding : 1
@@ -55,6 +56,7 @@ class State {
         this.timeMachineLamps = save ? save.timeMachineLamps : 0
         this.timeMachineRate = 25n
         this.isTimeMachineActivated = false
+        this.timeMachineBonusText = isLangRu ? 'Бонус в секунду x' : 'Bonus per second x'
 
         this.addPerClick = save ? save.addClick : 1n
         this.addPerClickNextValue = save ? save.addPerClickNextValue : 1n
@@ -73,7 +75,10 @@ class State {
         EventHub.on( events.requestUpgradeAuto, this.upgradeAuto.bind(this) )
         EventHub.on( events.requestStartTurbo, this.startTurbo.bind(this) )
 
-        EventHub.on( events.timeAcceleration, (isOn) => this.isTimeMachineActivated = isOn )
+        EventHub.on( events.timeAcceleration, (isOn) => {
+            this.isTimeMachineActivated = isOn
+            if (isOn) showBonusUI(this.timeMachineBonusText + this.timeMachineRate.toString())
+        })
 
         EventHub.on( events.requestAD, this.showAD.bind(this) )
 
@@ -87,11 +92,12 @@ class State {
 
     getButtonClick() {
         timeoutVoiceLetsDoIt = awaitVoiceLetsDoIt
-        this.getPoints(this.addPerClick)
+        this.getPoints(this.addPerClick * this.addRate)
+        if (this.addRate > 1n) setTurboCharge()
     }
 
     spyBotGetDamage(isDestroyed) {
-        const points = isDestroyed ? this.addPerClick * 10n : this.addPerClick * 5n
+        const points = isDestroyed ? this.addPerClick * 25n : this.addPerClick * 5n
         this.getPoints(points)
 
         showBonusUI('+ ' + (this.addRate * points).toFormat())
@@ -144,16 +150,12 @@ class State {
     }
 
     getPoints(points) {
-        const addPoints = points * this.addRate
-
-        this.points += addPoints
+        this.points += points
         
-        this.levelScored += addPoints
+        this.levelScored += points
         this.checkLevel()
 
         updateUIPoints()
-
-        if (this.addRate > 1n) setTurboCharge()
     }
 
     checkLevel() {
@@ -163,16 +165,19 @@ class State {
         this.levelScored -= this.levelPrice
         this.levelPrice = this.levelPrice.x5()
 
-        if (this.addRate > 1n) this.addRate = this.level
+        if (this.addRate > 1n) {
+            this.addRate = this.level
+            showBonusUI(this.turboBonusText + this.level.toString())
+        }
 
-        updateUILevel()
+        updateUILevel(this.level)
 
         this.updateTurboLightnings()
     }
 
     showAD() {
         if (this.isADBonusTurboSeconds) {
-            this.turboSeconds += 1
+            this.turboSeconds += 0.5
             this.turboTimeout = this.turboSeconds
             updateUITurboTimeout( true )
         } else {
@@ -281,6 +286,7 @@ class State {
 
         updateUIPoints()
         updateUITurboPanel()
+        showBonusUI(this.turboBonusText + this.level.toString())
     }
 
     updateAutoLightnings() {

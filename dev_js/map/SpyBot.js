@@ -1,27 +1,31 @@
 import { AnimatedSprite } from "pixi.js"
 import { drawCharge, spyBotGetDamage } from "../engine/events"
 import { sounds, sprites } from "../engine/loader"
+import { tickerAdd, tickerRemove } from "../engine/application"
+import { playSound, playVoice } from "../engine/sound"
+import { EventHub, events } from '../engine/events'
 import Smoke from "./Smoke"
 import Sparks from "./Sparks"
 import Explosion from "./Explosion"
-import { tickerAdd, tickerRemove } from "../engine/application"
-import { playSound, playVoice } from "../engine/sound"
 
 const spyBotRateX = 0.35
 
-const botFlyTimeout = 5 * 1000
-const botAwaitTimeout = 50 * 1000
+const botFlyTimeout = 3 * 1000
+const botAwaitTimeout = 45 * 1000
 const botFlySpeedPerRange = 0.001
 
+const spyStartLevel = 6
+
 class SpyBot extends AnimatedSprite {
-    constructor(spyDetectedVoice, spyFirstVoice, stateHelpRemove) {
+    constructor(spyDetectedVoice, spyFirstVoice, stateHelpRemove, level) {
         super(sprites.spy_bot.animations.go)
         this.anchor.set(0.5, 1)
 
         this.animationSpeed = 0.5
         this.stop()
 
-        this.hp = 10
+        this.levelNumber = Number(level)
+        this.hp = this.levelNumber
 
         this.turnRate = Math.random() < 0.5 ? -1 : 1
         this.offsetRateX = spyBotRateX * this.turnRate // -0.35 or 0.35
@@ -30,6 +34,8 @@ class SpyBot extends AnimatedSprite {
         this.topPoint = 0
         this.distance = 0
         this.isVisible = false
+
+        this.isActive = this.levelNumber >= spyStartLevel
 
         this.isSmoke = false
 
@@ -43,10 +49,10 @@ class SpyBot extends AnimatedSprite {
         this.eventMode = 'static'
         this.on('pointerdown', this.getClick.bind(this) )
 
-        this.flyTimeout = (stateHelpRemove) ? botFlyTimeout * 3 : botFlyTimeout
+        EventHub.on( events.updateUILevel, this.updateLevel.bind(this) )
 
-
-        setTimeout( () => this.showBot(), (stateHelpRemove) ? botAwaitTimeout * 9 : botAwaitTimeout )
+        this.flyTimeout = botFlyTimeout
+        if (this.isActive) setTimeout( () => this.showBot(), botAwaitTimeout )
     }
 
     updateOnMap(mapScale, mapWidth, bottomPoint, topPoint) {
@@ -60,6 +66,21 @@ class SpyBot extends AnimatedSprite {
         this.position.x = this.offsetRateX * mapWidth
         if (this.offsetRateY > 0) this.position.y = this.topPoint + this.distance * this.offsetRateY
         else this.position.y = topPoint
+    }
+
+    updateLevel(level) {
+        this.levelNumber = Number(level)
+        this.hp = this.levelNumber
+        this.flyTimeout = botFlyTimeout + Math.floor(this.levelNumber * 100)
+
+        console.log(this.hp, this.flyTimeout)
+
+        if (this.stateHelpRemove) this.flyTimeout *= 3
+
+        if (!this.isActive && this.levelNumber >= spyStartLevel) {
+            this.isActive = true
+            setTimeout( () => this.showBot(), botAwaitTimeout )
+        }
     }
 
     getClick() {
@@ -102,7 +123,7 @@ class SpyBot extends AnimatedSprite {
     }
 
     showBot() {
-        this.hp = 10
+        this.hp = this.levelNumber + 5
 
         this.turnRate *= -1
         this.scale.x *= -1

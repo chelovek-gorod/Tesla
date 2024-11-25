@@ -40,10 +40,21 @@ class ActionScene extends Container {
         //this.backRect = new Graphics()
         //this.addChild(this.backRect)
 
-        this.truck = new Thing('truck', 0.55, {x: -0.37, y: -0.82})
-        this.addChild(this.truck)
+        this.car = new Thing('broken_car', 0.45, {x: -0.3, y: -0.9}, true)
+        this.addChild(this.car)
 
-        this.cube = new Thing('euro_cube', 0.75, {x: 0.1, y: -0.8})
+        const timeMachineSettings = {
+            lightnings: 1, lamps: state.timeMachineLamps, level: Number(state.level)
+        }
+        const timeMachineVoices = {
+            build1: isLangRu ? 'ru_time_acc_build_1' : 'en_time_acc_build_1',
+            build2: isLangRu ? 'ru_time_acc_build_2' : 'en_time_acc_build_2',
+            start: isLangRu ? 'ru_time_acc_start' : 'en_time_acc_start'
+        }
+        this.timeMachine = new TimeMachine(0.75, {x: -0.4, y: -0.75}, timeMachineSettings, timeMachineVoices)
+        this.addChild(this.timeMachine)
+
+        this.cube = new Thing('euro_cube', 0.75, {x: 0.1, y: -0.8}, true)
         this.addChild(this.cube)
 
         // right
@@ -62,9 +73,11 @@ class ActionScene extends Container {
         this.addChild(this.bbRG1)
         
         // left
+        this.bbWG1 = new Thing('building_box', 0.75, {x: -0.15, y: -0.65})
+        this.addChild(this.bbWG1)
         const initDataWG1LT = {
-            scale: 0.6,
-            offsetRate: {x: -0.12, y: -0.84},
+            scale: 0.75,
+            offsetRate: {x: -0.25, y: -0.5},
             canvasIndex: 1,
             dischargeEventName: events.setAutoCharge,
             upgradeEventName: events.updateTowerAuto,
@@ -73,14 +86,6 @@ class ActionScene extends Container {
         }
         this.WG1LT = new LightningTower(initDataWG1LT)
         this.addChild(this.WG1LT)
-        this.bbWG1 = new Thing('building_box', 0.75, {x: -0.18, y: -0.7})
-        this.addChild(this.bbWG1)
-
-        const timeMachineSettings = {
-            lightnings: 1, lamps: state.timeMachineLamps, level: Number(state.level)
-        }
-        this.timeMachine = new TimeMachine(1, {x: -0.3, y: -0.35}, timeMachineSettings)
-        this.addChild(this.timeMachine)
 
         // left
         this.bbRG2 = new Thing('building_box', 0.9, {x: -0.42, y: -0.2})
@@ -122,6 +127,9 @@ class ActionScene extends Container {
         this.transformer = new Thing('transformer', 1, {x: -0.08, y: 0.1})
         this.addChild(this.transformer)
 
+        this.truck = new Thing('truck', 1, {x: 0.4, y: -0.02}, true)
+        this.addChild(this.truck)
+
         this.lightningCanvasFirst = new Graphics()
         this.lightningCanvasFirst.lineWidth = 2
         this.addChild(this.lightningCanvasFirst)
@@ -138,13 +146,10 @@ class ActionScene extends Container {
         this.mainButtonLT = new LightningTower(initDataButtonLT)
         this.addChild(this.mainButtonLT)
 
-        this.car = new Thing('broken_car', 1, {x: 0.36, y: -0.12})
-        this.addChild(this.car)
-
         const spyDetectedVoice = isLangRu ? voices.ru_spy : voices.en_spy
         const spyFirstVoice = isLangRu ? voices.ru_spy_kill : voices.en_spy_kill
         const stateHelpRemove = (this.state.help.has('spy')) ? () => this.state.help.delete('spy') : null
-        this.spyBot = new SpyBot(spyDetectedVoice, spyFirstVoice, stateHelpRemove)
+        this.spyBot = new SpyBot(spyDetectedVoice, spyFirstVoice, stateHelpRemove, this.state.level)
         this.addChild(this.spyBot)
         
         this.screenResize( screenData )
@@ -262,8 +267,6 @@ class ActionScene extends Container {
         } else if (rotorOpenIndex === 2) {
             this.bbRG2 = new RotorGenerator(this.bbRG2, this.state.addRate > 1n)
             this.RG2LT.activate()
-        } else {
-            console.error(`get wrong RotorGeneratorIndex in ActionScene.js: ${rotorOpenIndex}`)
         }
     }
 }

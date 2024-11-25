@@ -5,7 +5,8 @@ import { tickerAdd } from "../engine/application"
 
 const speed = 0.005
 const speedMax = 2.5
-const accelerationStep = 0.0001
+const accelerationRate = 1.035
+const slowdownRate = 0.9662 // 1 / accelerationRate
 
 class Moon extends Sprite {
     constructor( screenData ) {
@@ -41,10 +42,10 @@ class Moon extends Sprite {
         if (this.position.y <= 0) this.restart()
 
         if (this.isAccelerated) {
-            if (this.speed < speedMax) this.speed += accelerationStep * time.elapsedMS
+            if (this.speed < speedMax) this.speed *= accelerationRate * time.deltaTime
         } else {
             if (this.speed > speed) {
-                this.speed -= accelerationStep * time.elapsedMS
+                this.speed *= slowdownRate * time.deltaTime
                 if (this.speed < speed) this.speed = speed
             }
         }

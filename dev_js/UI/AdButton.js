@@ -2,6 +2,8 @@ import { AnimatedSprite } from "pixi.js"
 import { sprites } from "../engine/loader"
 import { EventHub, events, requestAD } from '../engine/events'
 
+const timeout = 1 * 1000
+
 class AdButton extends AnimatedSprite {
     constructor() {
         super(sprites.ad_button.animations.go)
@@ -10,12 +12,13 @@ class AdButton extends AnimatedSprite {
         this.anchor.set(1, 0)
 
         this.isActive = true
+        this.isTurboOn = false
 
         this.eventMode = 'static'
         this.on('pointerdown', this.getClick.bind(this) )
 
-        EventHub.on( events.requestStartTurbo, () => this.activation( false ) )
-        EventHub.on( events.responseStopTurbo, () => this.activation( true ) )
+        EventHub.on( events.requestStartTurbo, () => this.changeTurboState( true ) )
+        EventHub.on( events.responseStopTurbo, () => this.changeTurboState( false ) )
     }
 
     getClick() {
@@ -24,10 +27,12 @@ class AdButton extends AnimatedSprite {
         this.activation( false )
         requestAD()
         
-        setTimeout( () => this.getUpgradeForAD(), 5000 )
+        setTimeout( () => this.getUpgradeForAD(), timeout )
     }
 
     getUpgradeForAD() {
+        if (this.isTurboOn) return
+
         this.activation( true )
     }
 
@@ -36,6 +41,11 @@ class AdButton extends AnimatedSprite {
 
         if (this.isActive) this.play()
         else this.gotoAndStop(0)
+    }
+
+    changeTurboState(isOn) {
+        this.isTurboOn = isOn
+        this.activation( !isOn )
     }
 }
 
