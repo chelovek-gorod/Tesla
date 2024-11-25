@@ -1,6 +1,7 @@
 import { Container, AnimatedSprite } from "pixi.js"
 import { sounds, sprites, voices } from "../engine/loader"
-import { EventHub, events, drawCharge, timeAcceleration, drawSkyCharge } from '../engine/events'
+import { EventHub, events, drawCharge, timeAcceleration,
+    drawSkyCharge, setAdButtonAvailable } from '../engine/events'
 import Smoke from "./Smoke"
 import { tickerAdd, tickerRemove } from "../engine/application"
 import { playSound, playVoice } from "../engine/sound"
@@ -127,6 +128,7 @@ class TimeMachine extends Container {
     }
 
     activation() {
+        setAdButtonAvailable(true)
         playVoice(voices[this.voiceStart])
         this.isActive = true
         this.tower.animationSpeed = 0.5
@@ -135,6 +137,7 @@ class TimeMachine extends Container {
             timeAcceleration(this.isActive)
             setTimeout( () => this.deactivation(), timeAccelerationTimeout )
             tickerAdd(this)
+
             playSound(sounds.se_time_acc)
             setTimeout( () => this.checkSound(), 2000 )
         }
@@ -154,6 +157,7 @@ class TimeMachine extends Container {
         this.tower.textures = sprites.time_machine.animations.off
         this.tower.gotoAndPlay(0)
         this.tower.onComplete = () => {
+            setAdButtonAvailable(false)
             timeAcceleration(this.isActive)
             this.tower.animationSpeed = 0
             this.tower.textures = sprites.time_machine.animations.on

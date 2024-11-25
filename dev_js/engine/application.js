@@ -21,15 +21,11 @@ const appSettings = {
     resizeTo: window
 }
 
+
+
 Promise.all( [app.init( appSettings )] ).then( appReady )
 function appReady() {
-    app.ticker.add( time => {
-        // if (delta = 1) -> FPS = 60 (16.66ms per frame)
-        tickerArr.forEach( element => element.tick(time) )
-        // time.elapsedMS - in milliseconds
-        // time.deltaMS   - ???
-        // time.deltaTime - in frame
-    })
+    app.ticker.add( time => tick(time) )
     document.body.append( app.canvas )
     resize()
 
@@ -76,6 +72,25 @@ if ('hidden' in document) document.addEventListener('visibilitychange', visibili
 function visibilityOnChange( isHide ) {
     if (isHide) stopMusic()
     else playMusic()
+}
+
+let isTick = true
+
+export function stopTicker() {
+    isTick = false
+}
+
+export function startTicker() {
+    isTick = true
+}
+
+function tick(time) {
+    if (!isTick) return
+    // if (delta = 1) -> FPS = 60 (16.66ms per frame)
+    tickerArr.forEach( element => element.tick(time) )
+    // time.elapsedMS - in milliseconds
+    // time.deltaMS   - ???
+    // time.deltaTime - in frame
 }
 
 export function tickerAdd( element ) {

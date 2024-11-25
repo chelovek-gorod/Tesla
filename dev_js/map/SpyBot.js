@@ -73,8 +73,6 @@ class SpyBot extends AnimatedSprite {
         this.hp = this.levelNumber
         this.flyTimeout = botFlyTimeout + Math.floor(this.levelNumber * 100)
 
-        console.log(this.hp, this.flyTimeout)
-
         if (this.stateHelpRemove) this.flyTimeout *= 3
 
         if (!this.isActive && this.levelNumber >= spyStartLevel) {

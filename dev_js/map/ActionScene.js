@@ -76,8 +76,8 @@ class ActionScene extends Container {
         this.bbWG1 = new Thing('building_box', 0.75, {x: -0.15, y: -0.65})
         this.addChild(this.bbWG1)
         const initDataWG1LT = {
-            scale: 0.75,
-            offsetRate: {x: -0.25, y: -0.5},
+            scale: 0.7,
+            offsetRate: {x: -0.25, y: -0.55},
             canvasIndex: 1,
             dischargeEventName: events.setAutoCharge,
             upgradeEventName: events.updateTowerAuto,
@@ -87,25 +87,12 @@ class ActionScene extends Container {
         this.WG1LT = new LightningTower(initDataWG1LT)
         this.addChild(this.WG1LT)
 
-        // left
-        this.bbRG2 = new Thing('building_box', 0.9, {x: -0.42, y: -0.2})
-        this.addChild(this.bbRG2)
-        const initDataRG2LT = {
-            scale: 0.9,
-            offsetRate: {x: -0.52, y: -0.12},
-            canvasIndex: 0,
-            dischargeEventName: events.setTurboCharge,
-            upgradeEventName: events.updateTowerTurbo,
-            isActive: false,
-            lightningCount: state.turboLightnings
-        }
-        this.RG2LT = new LightningTower(initDataRG2LT)
-        this.addChild(this.RG2LT)
-
         // right
+        this.bbWG2 = new Thing('building_box', 0.8, {x: 0.45, y: -0.5})
+        this.addChild(this.bbWG2)
         const initDataWG2LT = {
-            scale: 0.7,
-            offsetRate: {x: 0.55, y: -0.55},
+            scale: 0.8,
+            offsetRate: {x: 0.55, y: -0.4},
             canvasIndex: 1,
             dischargeEventName: events.setAutoCharge,
             upgradeEventName: events.updateTowerAuto,
@@ -114,8 +101,6 @@ class ActionScene extends Container {
         }
         this.WG2LT = new LightningTower(initDataWG2LT)
         this.addChild(this.WG2LT)
-        this.bbWG2 = new Thing('building_box', 0.8, {x: 0.45, y: -0.5})
-        this.addChild(this.bbWG2)
 
         this.lightningCanvasSecond = new Graphics()
         this.lightningCanvasSecond.lineWidth = 1
@@ -134,8 +119,23 @@ class ActionScene extends Container {
         this.lightningCanvasFirst.lineWidth = 2
         this.addChild(this.lightningCanvasFirst)
 
+        // left
+        this.bbRG2 = new Thing('building_box', 0.9, {x: -0.42, y: -0.2})
+        this.addChild(this.bbRG2)
+        const initDataRG2LT = {
+            scale: 0.85,
+            offsetRate: {x: -0.52, y: -0.1},
+            canvasIndex: 0,
+            dischargeEventName: events.setTurboCharge,
+            upgradeEventName: events.updateTowerTurbo,
+            isActive: false,
+            lightningCount: state.turboLightnings
+        }
+        this.RG2LT = new LightningTower(initDataRG2LT)
+        this.addChild(this.RG2LT)
+
         const initDataButtonLT = {
-            scale: 1,
+            scale: 0.9,
             offsetRate: {x: 0.20, y: 0.1},
             canvasIndex: 0,
             dischargeEventName: events.getClick,

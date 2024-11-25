@@ -36,39 +36,39 @@ class State {
     constructor(save = null, isLangRu) {
         this.help = new Set( save ? save.help : ['button', 'auto', 'click', 'turbo', 'boost', 'spy'] )
 
-        this.isADBonusTurboSeconds = save ? save.isADBonusTurboSeconds : false
+        this.isADBonusTurboSeconds = false
 
-        this.points = save ? save.points : 0n
+        this.points = save ? BigInt(save.points) : 0n
         this.addRate = 1n // x turbo in TURBO UES
 
-        this.level = save ? save.level : 1n
-        this.levelScored = save ? save.levelScored : 0n
-        this.levelPrice = save ? save.levelPrice : 1000n // 1000n
+        this.level = save ? BigInt(save.level) : 1n
+        this.levelScored = save ? BigInt(save.levelScored) : 0n
+        this.levelPrice = save ? BigInt(save.levelPrice) : 1000n // 1000n
 
         this.turboSeconds = save ? save.turboSeconds : 10
-        this.turboPrice = save ? save.turboPrice : 1000n // 5000n
+        this.turboPrice = save ? BigInt(save.turboPrice) : 1000n // 5000n
         this.turboTimeout = 0
         this.turboBonusText = isLangRu ? 'Бонус за клик x' : 'Bonus per click x'
 
         this.turboOpenBuildings = save ? save.turboOpenBuildings : 0 // MAX 2
-        this.turboLightnings = save ? save.turboLightningInBuilding : 1
+        this.turboLightnings = save ? save.turboLightnings : 1
 
         this.timeMachineLamps = save ? save.timeMachineLamps : 0
         this.timeMachineRate = 25n
         this.isTimeMachineActivated = false
         this.timeMachineBonusText = isLangRu ? 'Бонус в секунду x' : 'Bonus per second x'
 
-        this.addPerClick = save ? save.addClick : 1n
-        this.addPerClickNextValue = save ? save.addPerClickNextValue : 1n
-        this.addPerClickPrice = save ? save.addPerClickPrice : 500n // 500n
+        this.addPerClick = save ? BigInt(save.addPerClick) : 1n
+        this.addPerClickNextValue = save ? BigInt(save.addPerClickNextValue) : 1n
+        this.addPerClickPrice = save ? BigInt(save.addPerClickPrice) : 500n // 500n
         this.clickLightnings = save ? save.clickLightnings : 1
 
-        this.addPerSecond = save ? save.addPerSecond : 0n
-        this.addPerSecondNextValue = save ? save.addPerClickNextValue : 1n
-        this.addPerSecondPrice = save ? save.addPerClickPrice : 100n // 100n
+        this.addPerSecond = save ? BigInt(save.addPerSecond) : 0n
+        this.addPerSecondNextValue = save ? BigInt(save.addPerSecondNextValue) : 1n
+        this.addPerSecondPrice = save ? BigInt(save.addPerSecondPrice) : 100n // 100n
 
         this.autoOpenBuildings = save ? save.autoOpenBuildings : 0 // MAX 2
-        this.autoLightnings = save ? save.autoLightningInBuilding : 1
+        this.autoLightnings = save ? save.autoLightnings : 1
 
         EventHub.on( events.getClick, this.getButtonClick.bind(this) )
         EventHub.on( events.requestUpgradeClick, this.upgradeClick.bind(this) )
@@ -236,8 +236,8 @@ class State {
 
         // map
         const digits = (this.addPerClick.toString()).length
-        const lightnings = Math.ceil(digits / 3)
-        if (lightnings > this.clickLightnings) {
+        const lightnings = Math.ceil(digits / 2)
+        if (lightnings > this.clickLightnings && lightnings < maxLightningsFromTower) {
             this.clickLightnings = lightnings
             updateTowerClick( lightnings )
         }
@@ -293,24 +293,17 @@ class State {
         if (this.autoOpenBuildings === 0) {
             this.autoOpenBuildings++
             updateBuildingAuto( this.autoOpenBuildings )
-        }
-        
-        if (this.autoOpenBuildings === 1) {
-            this.autoLightnings = this.level
-            if (this.level > BigInt(maxLightningsFromTower)) {
+        } else if (this.autoOpenBuildings === 1) {
+            this.autoLightnings++
+            if (this.autoLightnings > maxLightningsFromTower) {
+                this.autoLightnings = 1
                 this.autoOpenBuildings++
                 updateBuildingAuto( this.autoOpenBuildings )
             }
-        }
-
-        if (this.autoOpenBuildings > 1) {
-            this.autoLightnings = this.level / 2n
-            if (this.autoLightnings > maxLightningsFromTower) {
-                this.autoLightnings = maxLightningsFromTower
-            }
-        }
-        
-        updateBuildingAuto(0)
+        } else if (this.autoLightnings < maxLightningsFromTower) {
+            this.autoLightnings++
+        } 
+        updateTowerAuto(this.autoLightnings)
     }
 
     updateTurboLightnings() {
@@ -319,21 +312,50 @@ class State {
             updateBuildingTurbo( this.turboOpenBuildings )
         }
         
-        if (this.turboOpenBuildings === 1) {
-            this.turboLightnings = this.level
-            if (this.level > BigInt(maxLightningsFromTower)) {
-                this.turboOpenBuildings++
-                updateBuildingTurbo( this.turboOpenBuildings )
-            }
+        if (this.turboOpenBuildings === 1
+        && Number(this.level) > maxLightningsFromTower) {
+            this.turboOpenBuildings++
+            updateBuildingTurbo( this.turboOpenBuildings )
         }
 
-        if (this.turboOpenBuildings > 1) {
-            this.turboLightnings = this.level / 2n
-            if (this.turboLightnings > maxLightningsFromTower) {
-                this.turboLightnings = maxLightningsFromTower
-            }
+        this.turboLightnings = (this.turboOpenBuildings === 1)
+        ? Number(this.level)
+        : Number(this.level) - maxLightningsFromTower
+        if (this.turboLightnings > maxLightningsFromTower) {
+            this.turboLightnings = maxLightningsFromTower
         }
-        updateBuildingTurbo( 0 )
+        updateTowerTurbo( this.turboLightnings )
+    }
+
+    getStateDataForSave() {
+        const save = {
+            help: Array.from(this.help),
+            points: this.points.toString(),
+            level: this.level.toString(),
+            levelScored: this.levelScored.toString(),
+            levelPrice: this.levelPrice.toString(),
+
+            turboSeconds: this.turboSeconds,
+            turboPrice: this.turboPrice.toString(),
+            turboOpenBuildings: this.turboOpenBuildings,
+            turboLightnings: this.turboLightnings,
+
+            timeMachineLamps: this.timeMachineLamps,
+
+            addPerClick: this.addPerClick.toString(),
+            addPerClickNextValue: this.addPerClickNextValue.toString(),
+            addPerClickPrice: this.addPerClickPrice.toString(),
+            clickLightnings: this.clickLightnings,
+
+            addPerSecond: this.addPerSecond.toString(),
+            addPerSecondNextValue: this.addPerSecondNextValue.toString(),
+            addPerSecondPrice: this.addPerSecondPrice.toString(),
+
+            autoOpenBuildings: this.autoOpenBuildings,
+            autoLightnings: this.autoLightnings,
+        }
+
+        return save
     }
 }
 

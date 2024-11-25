@@ -1,8 +1,9 @@
 import { AnimatedSprite } from "pixi.js"
 import { sprites } from "../engine/loader"
 import { EventHub, events, requestAD } from '../engine/events'
+import Yandex from "../Yandex/Yandex"
 
-const timeout = 1 * 1000
+const timeout = 10 * 1000
 
 class AdButton extends AnimatedSprite {
     constructor() {
@@ -13,27 +14,30 @@ class AdButton extends AnimatedSprite {
 
         this.isActive = true
         this.isTurboOn = false
+        this.isTimeMachineOn = false
 
         this.eventMode = 'static'
         this.on('pointerdown', this.getClick.bind(this) )
 
         EventHub.on( events.requestStartTurbo, () => this.changeTurboState( true ) )
         EventHub.on( events.responseStopTurbo, () => this.changeTurboState( false ) )
+        EventHub.on( events.setAdButtonAvailable, (isOn) => this.changeTimeMachineState( isOn ) )
     }
 
     getClick() {
         if (!this.isActive) return
 
         this.activation( false )
-        requestAD()
-        
-        setTimeout( () => this.getUpgradeForAD(), timeout )
+
+        Yandex.showRewordAd( (isBonus) => this.getUpgradeForAD(isBonus) )
     }
 
-    getUpgradeForAD() {
-        if (this.isTurboOn) return
-
-        this.activation( true )
+    getUpgradeForAD(isBonus) {
+        if (isBonus === true) requestAD()
+        
+        setTimeout( () => {
+            this.activation( !this.isTimeMachineOn && !this.isTurboOn )
+        }, timeout )
     }
 
     activation( isActive ) {
@@ -45,7 +49,12 @@ class AdButton extends AnimatedSprite {
 
     changeTurboState(isOn) {
         this.isTurboOn = isOn
-        this.activation( !isOn )
+        this.activation( !this.isTimeMachineOn && !this.isTurboOn )
+    }
+
+    changeTimeMachineState(isOn) {
+        this.isTimeMachineOn = isOn
+        this.activation( !this.isTimeMachineOn && !this.isTurboOn )
     }
 }
 

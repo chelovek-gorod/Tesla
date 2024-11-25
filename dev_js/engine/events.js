@@ -35,7 +35,9 @@ export const events = {
 
     drawCharge: 'drawCharge',
     drawSkyCharge: 'drawSkyCharge',
-    timeAcceleration: 'timeAcceleration'
+    timeAcceleration: 'timeAcceleration',
+
+    setAdButtonAvailable: 'setAdButtonAvailable',
 }
 
 export function screenResize( data ) {
@@ -125,6 +127,10 @@ export function drawSkyCharge(data) {
 
 export function timeAcceleration( isOn ) {
     EventHub.emit( events.timeAcceleration, isOn )
+}
+
+export function setAdButtonAvailable( isOn ) {
+    EventHub.emit( events.setAdButtonAvailable, isOn )
 }
 
 /*

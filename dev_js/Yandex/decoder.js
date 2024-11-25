@@ -16,6 +16,7 @@ export function decode(string) {
     return result
 }
 
+/*
 let testString = JSON.stringify({
     type: 'test',
     arr: [
@@ -39,3 +40,4 @@ console.time('decoding')
 testString = decode(testString)
 console.timeEnd('decoding')
 console.log(JSON.parse(testString))
+*/

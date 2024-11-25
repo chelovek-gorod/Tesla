@@ -22,6 +22,11 @@ export function playVoice( vs ) {
         playVoice( nextVoice )
     })
 }
+export function stopVoices() {
+    if (voiceInstance) voiceInstance.stop()
+    voiceInstance = null
+    voicesSet.clear()
+}
 
 export function playSound( se ) {
     if (!isSoundOn) return

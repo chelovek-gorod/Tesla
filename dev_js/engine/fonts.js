@@ -55,6 +55,32 @@ export function initFontStyles() {
             align: 'center',
         }),
 
+        message: new TextStyle({
+            fontFamily: fonts.normal,
+            fontSize: 36,
+            fill: '#ff0000',
+            align: 'center',
+
+            dropShadow: true,
+            dropShadowColor: '#000000',
+            dropShadowBlur: 6,
+            dropShadowAngle: 0,
+            dropShadowDistance: 0,
+        }),
+
+        mobileMessage: new TextStyle({
+            fontFamily: fonts.normal,
+            fontSize: 24,
+            fill: '#ff0000',
+            align: 'center',
+
+            dropShadow: true,
+            dropShadowColor: '#000000',
+            dropShadowBlur: 4,
+            dropShadowAngle: 0,
+            dropShadowDistance: 0,
+        }),
+
         // EXAMPLES
         /*
         gradientText: new TextStyle({

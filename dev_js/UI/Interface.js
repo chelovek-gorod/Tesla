@@ -101,7 +101,12 @@ class Interface extends Container {
         this.addChild(this.adButton)
 
         // Restart
-        this.restartButton = new RestartButton()
+        const restartText = isLangRu
+        ? 'Кликните по экрану\nесли желаете сбросить весь прогресс\nи начать все сначала.\n'
+        + '\nэтот экран исчезнет\nчерез несколько секунд'
+        : 'Click on the screen\nif you wish to reset all progress\nand start over.\n'
+        + '\nthis screen will disappear\nafter a few seconds'
+        this.restartButton = new RestartButton(restartText)
         this.addChild(this.restartButton)
 
         // main button
