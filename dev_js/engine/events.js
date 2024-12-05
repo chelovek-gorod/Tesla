@@ -38,6 +38,7 @@ export const events = {
     timeAcceleration: 'timeAcceleration',
 
     setAdButtonAvailable: 'setAdButtonAvailable',
+    getADBonusUI: 'getADBonusUI',
 }
 
 export function screenResize( data ) {
@@ -131,6 +132,10 @@ export function timeAcceleration( isOn ) {
 
 export function setAdButtonAvailable( isOn ) {
     EventHub.emit( events.setAdButtonAvailable, isOn )
+}
+
+export function getADBonusUI( bonus ) {
+    EventHub.emit( events.getADBonusUI, bonus )
 }
 
 /*

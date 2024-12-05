@@ -4,10 +4,24 @@ import { EventHub, events } from '../engine/events'
 import { tickerAdd } from "../engine/application"
 
 const speed = 0.002
-const speedMax = 1
-const accelerationRate = 1.035
-const slowdownRate = 0.9662 // 1 / accelerationRate
+const speedMax = 0.8
+const accelerationRate = 1.051
+const slowdownRate = 0.9515 // 1 / accelerationRate
 const tileHeight = 400
+
+/*
+let ss = 0.005 // start speed
+const ms = 2 // max speed
+const acc = 1.051 // acceleration
+// need 2 sec = 120 frames
+let count = 0
+while (ss < ms) {
+    ss *= acc
+    count++
+}
+console.log('count', count)
+console.log('slowdown =', 1 / acc)
+*/
 
 class NightSky extends TilingSprite {
     constructor( screenData ) {
@@ -37,7 +51,10 @@ class NightSky extends TilingSprite {
         if (this.position.y <= -tileHeight) this.position.y += tileHeight
 
         if (this.isAccelerated) {
-            if (this.speed < speedMax) this.speed *= accelerationRate * time.deltaTime
+            if (this.speed < speedMax) {
+                this.speed *= accelerationRate * time.deltaTime
+                if (this.speed > speedMax) this.speed = speedMax
+            }
         } else {
             if (this.speed > speed) {
                 this.speed *= slowdownRate * time.deltaTime

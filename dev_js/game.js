@@ -15,6 +15,7 @@ export function checkLangRu() {
 
 export function startGame() {
     if (Yandex.isRealYandex) isLangRu = Yandex.isLangRu
+
     const savedState = Yandex ? Yandex.getSave() : null
 
     const screenData = getAppScreen()

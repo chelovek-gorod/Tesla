@@ -64,24 +64,26 @@ class ActionScene extends Container {
             canvasIndex: 1,
             dischargeEventName: events.setTurboCharge,
             upgradeEventName: events.updateTowerTurbo,
-            isActive: false,
+            isActive: state.turboOpenBuildings > 0,
             lightningCount: state.turboLightnings
         }
         this.RG1LT = new LightningTower(initDataRG1LT)
         this.addChild(this.RG1LT)
         this.bbRG1 = new Thing('building_box', 0.6, {x: 0.3, y: -0.8})
         this.addChild(this.bbRG1)
+        if (state.turboOpenBuildings > 0) this.bbRG1 = new RotorGenerator(this.bbRG1, false)
         
         // left
         this.bbWG1 = new Thing('building_box', 0.75, {x: -0.15, y: -0.65})
         this.addChild(this.bbWG1)
+        if (state.autoOpenBuildings > 0) this.bbWG1 = new WindGenerator(this.bbWG1)
         const initDataWG1LT = {
             scale: 0.7,
             offsetRate: {x: -0.25, y: -0.55},
             canvasIndex: 1,
             dischargeEventName: events.setAutoCharge,
             upgradeEventName: events.updateTowerAuto,
-            isActive: false,
+            isActive: state.autoOpenBuildings > 0,
             lightningCount: state.autoLightnings
         }
         this.WG1LT = new LightningTower(initDataWG1LT)
@@ -90,13 +92,14 @@ class ActionScene extends Container {
         // right
         this.bbWG2 = new Thing('building_box', 0.8, {x: 0.45, y: -0.5})
         this.addChild(this.bbWG2)
+        if (state.autoOpenBuildings > 1) this.bbWG2 = new WindGenerator(this.bbWG2)
         const initDataWG2LT = {
             scale: 0.8,
             offsetRate: {x: 0.55, y: -0.4},
             canvasIndex: 1,
             dischargeEventName: events.setAutoCharge,
             upgradeEventName: events.updateTowerAuto,
-            isActive: false,
+            isActive: state.autoOpenBuildings > 1,
             lightningCount: state.autoLightnings
         }
         this.WG2LT = new LightningTower(initDataWG2LT)
@@ -122,13 +125,14 @@ class ActionScene extends Container {
         // left
         this.bbRG2 = new Thing('building_box', 0.9, {x: -0.42, y: -0.2})
         this.addChild(this.bbRG2)
+        if (state.turboOpenBuildings > 1) this.bbRG2 = new RotorGenerator(this.bbRG2, false)
         const initDataRG2LT = {
             scale: 0.85,
             offsetRate: {x: -0.52, y: -0.1},
             canvasIndex: 0,
             dischargeEventName: events.setTurboCharge,
             upgradeEventName: events.updateTowerTurbo,
-            isActive: false,
+            isActive: state.turboOpenBuildings > 1,
             lightningCount: state.turboLightnings
         }
         this.RG2LT = new LightningTower(initDataRG2LT)

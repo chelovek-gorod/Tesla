@@ -1,5 +1,4 @@
-import { Container, Graphics, Text } from "pixi.js"
-import { textStyles } from '../engine/fonts'
+import { Container, Graphics } from "pixi.js"
 import { getAppScreen } from "../engine/application"
 import { EventHub, events } from "../engine/events"
 import { sceneAdd } from "../engine/application"
@@ -10,7 +9,7 @@ class FullScreenMessage extends Container {
         this.bg = new Graphics()
         this.bg.alpha = 0.85
         this.addChild(this.bg)
-        this.text = new Text({ text: message, style: textStyles.message })
+        this.text = message
         this.text.anchor.set(0.5)
         this.addChild(this.text)
 

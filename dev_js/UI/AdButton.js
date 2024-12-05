@@ -2,11 +2,12 @@ import { AnimatedSprite } from "pixi.js"
 import { sprites } from "../engine/loader"
 import { EventHub, events, requestAD } from '../engine/events'
 import Yandex from "../Yandex/Yandex"
+import { playVoice } from "../engine/sound"
 
 const timeout = 10 * 1000
 
 class AdButton extends AnimatedSprite {
-    constructor() {
+    constructor( disableVoice ) {
         super(sprites.ad_button.animations.go)
         this.animationSpeed = 0.05
         this.play()
@@ -15,6 +16,8 @@ class AdButton extends AnimatedSprite {
         this.isActive = true
         this.isTurboOn = false
         this.isTimeMachineOn = false
+
+        this.disableVoice = disableVoice
 
         this.eventMode = 'static'
         this.on('pointerdown', this.getClick.bind(this) )
@@ -25,7 +28,7 @@ class AdButton extends AnimatedSprite {
     }
 
     getClick() {
-        if (!this.isActive) return
+        if (!this.isActive) return playVoice(this.disableVoice)
 
         this.activation( false )
 

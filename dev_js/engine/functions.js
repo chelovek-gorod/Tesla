@@ -152,6 +152,23 @@ export function moveSprite(sprite, pathSize) {
     sprite.position.y += Math.sin(sprite.rotation) * pathSize;
 }
 
+export function moveToTarget( sprite, target, pathSize ) {
+    const distance = getDistance(sprite, target)
+    
+    if (distance <= pathSize) {
+        sprite.position.x = target.position.x
+        sprite.position.y = target.position.y
+
+        return true
+    }
+
+    const moveRate = pathSize / distance
+    sprite.position.x += moveRate * (target.position.x - sprite.position.x)
+    sprite.position.y += moveRate * (target.position.y - sprite.position.y)
+
+    return false
+}
+
 const _2PI = Math.PI * 2
 
 export function turnSpriteToTarget(sprite, target, turnAngle) {

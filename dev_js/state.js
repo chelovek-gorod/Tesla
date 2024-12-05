@@ -1,6 +1,6 @@
 import { EventHub, events, updateUILevel, updateUIPoints, needVoiceDoIt, showBonusUI,
     updateUIClickPanel, updateUIAutoPanel, updateUITurboPanel, updateUITurboTimeout,
-    updateBuildingAuto, updateBuildingTurbo, updateTowerTurbo, setTurboCharge,
+    updateBuildingAuto, updateBuildingTurbo, updateTowerTurbo, setTurboCharge, getADBonusUI,
     updateTowerAuto, updateTowerClick, setAutoCharge, responseStopTurbo } from './engine/events'
 import { tickerAdd } from './engine/application'
 
@@ -60,12 +60,12 @@ class State {
 
         this.addPerClick = save ? BigInt(save.addPerClick) : 1n
         this.addPerClickNextValue = save ? BigInt(save.addPerClickNextValue) : 1n
-        this.addPerClickPrice = save ? BigInt(save.addPerClickPrice) : 500n // 500n
+        this.addPerClickPrice = save ? BigInt(save.addPerClickPrice) : 250n // 500n
         this.clickLightnings = save ? save.clickLightnings : 1
 
         this.addPerSecond = save ? BigInt(save.addPerSecond) : 0n
         this.addPerSecondNextValue = save ? BigInt(save.addPerSecondNextValue) : 1n
-        this.addPerSecondPrice = save ? BigInt(save.addPerSecondPrice) : 100n // 100n
+        this.addPerSecondPrice = save ? BigInt(save.addPerSecondPrice) : 50n // 100n
 
         this.autoOpenBuildings = save ? save.autoOpenBuildings : 0 // MAX 2
         this.autoLightnings = save ? save.autoLightnings : 1
@@ -93,7 +93,10 @@ class State {
     getButtonClick() {
         timeoutVoiceLetsDoIt = awaitVoiceLetsDoIt
         this.getPoints(this.addPerClick * this.addRate)
-        if (this.addRate > 1n) setTurboCharge()
+        if (this.addRate > 1n) {
+            setTurboCharge()
+            showBonusUI(`x ${this.addRate}`)
+        }
     }
 
     spyBotGetDamage(isDestroyed) {
@@ -179,7 +182,9 @@ class State {
         if (this.isADBonusTurboSeconds) {
             this.turboSeconds += 0.5
             this.turboTimeout = this.turboSeconds
-            updateUITurboTimeout( true )
+            // updateUITurboTimeout( true )
+
+            getADBonusUI( 0 )
         } else {
             const bonus = (this.addPerClickPrice + this.addPerSecondPrice + this.turboPrice) / 6n
             this.points += bonus
@@ -187,7 +192,8 @@ class State {
             this.levelScored += bonus
             this.checkLevel()
 
-            updateUIPoints( bonus )
+            // updateUIPoints( bonus )
+            getADBonusUI( bonus )
         }
         this.isADBonusTurboSeconds = !this.isADBonusTurboSeconds
     }

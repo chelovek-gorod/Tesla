@@ -1,7 +1,7 @@
 import { AnimatedSprite } from "pixi.js"
 import { drawCharge, spyBotGetDamage } from "../engine/events"
 import { sounds, sprites } from "../engine/loader"
-import { tickerAdd, tickerRemove } from "../engine/application"
+import { checkFocus, tickerAdd, tickerRemove } from "../engine/application"
 import { playSound, playVoice } from "../engine/sound"
 import { EventHub, events } from '../engine/events'
 import Smoke from "./Smoke"
@@ -14,7 +14,7 @@ const botFlyTimeout = 3 * 1000
 const botAwaitTimeout = 45 * 1000
 const botFlySpeedPerRange = 0.001
 
-const spyStartLevel = 6
+const spyStartLevel = 4
 
 class SpyBot extends AnimatedSprite {
     constructor(spyDetectedVoice, spyFirstVoice, stateHelpRemove, level) {
@@ -46,13 +46,17 @@ class SpyBot extends AnimatedSprite {
         this.spyFirstVoice = spyFirstVoice
         this.stateHelpRemove = stateHelpRemove
 
+        this.timeout = null
+
         this.eventMode = 'static'
         this.on('pointerdown', this.getClick.bind(this) )
 
         EventHub.on( events.updateUILevel, this.updateLevel.bind(this) )
+        EventHub.on( events.timeAcceleration, this.timeAcceleration.bind(this) )
+        EventHub.on( events.requestAD, this.requestAD.bind(this) )
 
         this.flyTimeout = botFlyTimeout
-        if (this.isActive) setTimeout( () => this.showBot(), botAwaitTimeout )
+        if (this.isActive) this.timeout = setTimeout( () => this.showBot(), botAwaitTimeout )
     }
 
     updateOnMap(mapScale, mapWidth, bottomPoint, topPoint) {
@@ -77,7 +81,7 @@ class SpyBot extends AnimatedSprite {
 
         if (!this.isActive && this.levelNumber >= spyStartLevel) {
             this.isActive = true
-            setTimeout( () => this.showBot(), botAwaitTimeout )
+            this.timeout = setTimeout( () => this.showBot(), botAwaitTimeout )
         }
     }
 
@@ -115,7 +119,7 @@ class SpyBot extends AnimatedSprite {
             this.position.y = this.topPoint
             this.isVisible = false
 
-            setTimeout( () => this.showBot(), botAwaitTimeout )
+            this.timeout = setTimeout( () => this.showBot(), botAwaitTimeout )
             spyBotGetDamage(true)
         }
     }
@@ -130,10 +134,11 @@ class SpyBot extends AnimatedSprite {
         
         this.isVisible = true
         this.play()
-        setTimeout( () => this.isVisible = false, this.flyTimeout )
+        this.timeout = setTimeout( () => this.isVisible = false, this.flyTimeout )
         tickerAdd(this)
 
-        playVoice(this.spyDetectedVoice)
+        if ( checkFocus() ) playVoice(this.spyDetectedVoice)
+        
         if (this.stateHelpRemove) {
             playVoice(this.spyFirstVoice)
             this.stateHelpRemove()
@@ -155,9 +160,26 @@ class SpyBot extends AnimatedSprite {
             } else {
                 this.stop()
                 tickerRemove(this)
-                setTimeout( () => this.showBot(), botAwaitTimeout )
+                this.timeout = setTimeout( () => this.showBot(), botAwaitTimeout )
             }
         }
+    }
+
+    timeAcceleration(isOn) {
+        if (!this.isActive) return
+
+        if (isOn) {
+            this.isVisible = false
+            clearTimeout(this.timeout)
+            this.timeout = setTimeout( () => this.showBot(), botAwaitTimeout )
+        }
+    }
+
+    requestAD() {
+        if (!this.isActive || this.isVisible) return
+
+        clearTimeout(this.timeout)
+        this.timeout = setTimeout( () => this.showBot(), botAwaitTimeout )
     }
 }
 

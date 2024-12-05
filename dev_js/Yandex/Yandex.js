@@ -1,8 +1,9 @@
 import { startTicker, stopTicker } from "../engine/application"
-import { playMusic, stopMusic, stopVoices } from "../engine/sound"
+import { playMusic, soundGetState, soundTurnOff, soundTurnOn, stopMusic, stopVoices } from "../engine/sound"
 import { encode, decode } from './decoder'
 
 const isRealYandex = false
+const leaderboardName = 'TeslaLeaderboard' // string or null
 
 // save max 100 requests per 5 minutes => 1 in 3 seconds
 const saveDataTimeout = 4000 // I use save max in 4 seconds
@@ -11,16 +12,21 @@ class YandexSDK {
     constructor() {
         this.SDK = null
         this.player = null
+        this.leaderboard = null
 
         this.autoSaveCallback = null
         this.lastSaveEncodedString = ''
         this.requestTimeStamp = Date.now()
 
         this.isReady = false
-        this.initSDK()
+        
         this.isGetReword = false
         this.isLangRu = true
         this.isRealYandex = isRealYandex
+
+        this.isSoundOnBeforeAD = true
+
+        this.initSDK()
     }
 
     initSDK() {
@@ -37,14 +43,18 @@ class YandexSDK {
             this.player = {}
             this.lastSaveEncodedString = localStorage.getItem('save')
             this.isReady = true
-            return
+            return console.log('!!! NOT REAL YANDEX !!!')
         }
 
         if ('YaGames' in window) {
+            // console.log('YaGames', {...YaGames})
             YaGames.init().then(SDK => {
-                // console.log('initSDK done')
+                // console.log('initSDK done', {...SDK})
                 this.SDK = SDK
                 this.initPlayer()
+
+                this.SDK.getLeaderboards().then(lb => this.leaderboard = lb)
+
                 // console.log('this.SDK.environment.i18n.lang', this.SDK.environment.i18n.lang)
                 this.isLangRu = (this.SDK.environment.i18n.lang === 'ru')
             })
@@ -57,12 +67,12 @@ class YandexSDK {
 
     initPlayer() {
         this.SDK.getPlayer().then(player => {
-            // console.log('initPlayer done')
+            // console.log('initPlayer done', player)
             this.player = player
 
             // max 1 request per 3 seconds
             this.player.getData().then(save => {
-                // console.log('initSave done')
+                // console.log('initSave done', save)
                 if ('save' in save) this.lastSaveEncodedString = save.save
                 this.isReady = true
             })
@@ -126,28 +136,43 @@ class YandexSDK {
         setTimeout(() => callback(), saveDataTimeout)
     }
 
+    addDataToLeaderboard( data ) {
+        if (!isRealYandex || !this.leaderboard) return
+
+        this.SDK.isAvailableMethod('leaderboards.setLeaderboardScore').then( isAvailable => {
+            if (isAvailable) {
+                this.leaderboard.setLeaderboardScore(leaderboardName, data)
+            }
+        })
+    }
+
     showRewordAd( callback ){
         if (!this.SDK) return callback(false)
 
         if (!isRealYandex) return callback(true)
 
+        this.isSoundOnBeforeAD = soundGetState()
         Yandex.SDK.features.GameplayAPI.stop()
 
         this.SDK.adv.showRewardedVideo({
             callbacks: {
                 onOpen: () => {
                     stopTicker()
+
+                    if (this.isSoundOnBeforeAD) soundTurnOff()
                     stopMusic()
+                    
                     stopVoices()
                 },
                 onRewarded: () => {
                     this.isGetReword = true
-                    startTicker()
-                    playMusic()
                 },
                 onClose: () => {
                     startTicker()
+                    
+                    if (this.isSoundOnBeforeAD) soundTurnOn()
                     playMusic()
+
                     if (this.isGetReword) {
                         this.isGetReword = false
                         callback(true)
@@ -156,8 +181,12 @@ class YandexSDK {
                 },
                 onError: (e) => {
                     console.error('Error while open video ad:', e)
+
                     startTicker()
+
+                    if (this.isSoundOnBeforeAD) soundTurnOn()
                     playMusic()
+                    
                     callback(false)
                     Yandex.SDK.features.GameplayAPI.start()
                 }

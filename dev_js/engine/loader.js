@@ -49,6 +49,7 @@ export const sprites = {
     smoke: 'smoke_192x192px_25frames.json',
     sparks: 'splash_192x192px_20frames.json',
     explosion: 'explosion_192x192px_5x5_25frames.json',
+    ball_lightning: 'ball_lightning_156x156px_4x3_12frames.json',
 }
 const spritesNumber = Object.keys(sprites).length
 for (let sprite in sprites) sprites[sprite] = paths.sprites + sprites[sprite]

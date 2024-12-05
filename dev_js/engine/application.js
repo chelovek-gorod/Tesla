@@ -4,6 +4,8 @@ import { screenResize, clearSnow } from './events'
 
 const app = new Application()
 
+const isOnRightClickScreenshot = false
+
 const autoFullScreen = false
 function setFullScreen( canvas ) {
     canvas.onclick = () => {
@@ -27,6 +29,7 @@ Promise.all( [app.init( appSettings )] ).then( appReady )
 function appReady() {
     app.ticker.add( time => tick(time) )
     document.body.append( app.canvas )
+    if (!isOnRightClickScreenshot) app.canvas.oncontextmenu = (event) => event.preventDefault()
     resize()
 
     if (autoFullScreen) setFullScreen( app.canvas )
@@ -65,6 +68,7 @@ let orientation = window.matchMedia("(orientation: portrait)");
 orientation.addEventListener("change", () => setTimeout(resize, 0))
 window.addEventListener('resize', () => setTimeout(resize, 0))
 
+let isOnFocus = true
 window.addEventListener('focus', playMusic)
 window.addEventListener('focus', clearSnow)
 window.addEventListener('blur', stopMusic)
@@ -72,6 +76,11 @@ if ('hidden' in document) document.addEventListener('visibilitychange', visibili
 function visibilityOnChange( isHide ) {
     if (isHide) stopMusic()
     else playMusic()
+    isOnFocus = !isHide
+}
+
+export function checkFocus() {
+    return isOnFocus
 }
 
 let isTick = true

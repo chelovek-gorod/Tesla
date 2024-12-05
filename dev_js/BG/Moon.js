@@ -4,9 +4,23 @@ import { EventHub, events } from '../engine/events'
 import { tickerAdd } from "../engine/application"
 
 const speed = 0.005
-const speedMax = 2.5
-const accelerationRate = 1.035
-const slowdownRate = 0.9662 // 1 / accelerationRate
+const speedMax = 1
+const accelerationRate = 1.051
+const slowdownRate = 0.9515 // 1 / accelerationRate
+
+/*
+let ss = 0.005 // start speed
+const ms = 2 // max speed
+const acc = 1.051 // acceleration
+// need 2 sec = 120 frames
+let count = 0
+while (ss < ms) {
+    ss *= acc
+    count++
+}
+console.log('count', count)
+console.log('slowdown =', 1 / acc)
+*/
 
 class Moon extends Sprite {
     constructor( screenData ) {
@@ -24,6 +38,8 @@ class Moon extends Sprite {
         EventHub.on( events.timeAcceleration, this.timeAcceleration.bind(this) )
 
         tickerAdd(this)
+
+        // setInterval(() => console.log('speed =', this.speed, this.isAccelerated), 1000)
     }
 
     screenResize(screenData) {
@@ -42,7 +58,10 @@ class Moon extends Sprite {
         if (this.position.y <= 0) this.restart()
 
         if (this.isAccelerated) {
-            if (this.speed < speedMax) this.speed *= accelerationRate * time.deltaTime
+            if (this.speed < speedMax) {
+                this.speed *= accelerationRate * time.deltaTime
+                if (this.speed > speedMax) this.speed = speedMax
+            }
         } else {
             if (this.speed > speed) {
                 this.speed *= slowdownRate * time.deltaTime

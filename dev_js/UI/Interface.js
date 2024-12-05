@@ -16,12 +16,16 @@ import { playVoice } from "../engine/sound"
 import Pointer from "./Pointer"
 import HelpFinger from "./HelpFinger"
 import FlyingText from "./FlyingText"
+import Yandex from "../Yandex/Yandex"
+import BallLightning from './BallLightning'
 
 class Interface extends Container {
     constructor( screenData, state, isLangRu ) {
         super()
 
         this.finger = new HelpFinger(this)
+
+        const disabledVoice = isLangRu ? voices.ru_not_available : voices.en_not_available
 
         this.voices_next_level = isLangRu ? voices.ru_next_level : voices.en_next_level
         this.voice_extra_electricity = isLangRu ? voices.ru_extra_electricity : voices.en_extra_electricity
@@ -97,7 +101,7 @@ class Interface extends Container {
         this.addChild(this.textScore)
 
         // AD
-        this.adButton = new AdButton()
+        this.adButton = new AdButton(disabledVoice)
         this.addChild(this.adButton)
 
         // Restart
@@ -168,8 +172,7 @@ class Interface extends Container {
         // turbo switch
         const turboState = this.state.points >= this.state.turboPrice ? "ready" : "idle"
         const readyViceTP = isLangRu ? voices.ru_available_turbo : voices.en_available_turbo
-        const disabledVoiceTP = isLangRu ? voices.ru_not_available : voices.en_not_available
-        this.turboSwitch = new TurboSwitch(turboState, readyViceTP, disabledVoiceTP)
+        this.turboSwitch = new TurboSwitch(turboState, readyViceTP, disabledVoice)
         this.turboSwitch.position.x = -turboSwitchOffsetH
         this.turboSwitch.position.y = 0
         this.addChild(this.turboSwitch)
@@ -254,6 +257,7 @@ class Interface extends Container {
         EventHub.on( events.updateUITurboPanel, this.updateTurboPanel.bind(this) )
         EventHub.on( events.updateUITurboTimeout, this.updateTurboTimeout.bind(this) )
         EventHub.on( events.showBonusUI, this.showBonusText.bind(this) )
+        EventHub.on( events.getADBonusUI, this.getADBonus.bind(this) )
 
         EventHub.on( events.needVoiceDoIt, () => playVoice(this.voice_lets_do_it) )
 
@@ -394,6 +398,8 @@ class Interface extends Container {
         this.addChild( new Pointer(this.textInfoTurboBonus.position) )
 
         playVoice( this.voices_next_level )
+
+        Yandex.addDataToLeaderboard( Number(this.state.level) )
     }
     
     updatePoints( ADBonus ) {
@@ -438,6 +444,21 @@ class Interface extends Container {
             this.state.help.delete('boost')
             this.finger.showHelp(this.mainButton)
         }
+    }
+
+    getADBonus( bonus ) {
+        const point = {
+            x: this.adButton.position.x - this.adButton.width * 0.5, 
+            y: this.adButton.position.y + this.adButton.height * 0.5
+        }
+        const target = (bonus === 0) ? {
+            x: this.turboSwitch.position.x,
+            y: this.turboSwitch.position.y - this.turboSwitch.height * 0.5
+        } : {
+            x: this.topDisplay.position.x,
+            y: this.topDisplay.position.y + this.topDisplay.height * 0.5
+        }
+        this.addChild( new BallLightning(bonus, point, target) )
     }
 
     showBonusText(text) {

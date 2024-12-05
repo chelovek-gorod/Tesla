@@ -1,7 +1,9 @@
-import { Sprite } from "pixi.js"
+import { Sprite, Text } from "pixi.js"
 import { sprites } from "../engine/loader"
+import { textStyles } from '../engine/fonts'
 import Yandex from "../Yandex/Yandex"
 import FullScreenMessage from "./fullScreenMessage"
+
 
 class RestartButton extends Sprite {
     constructor(text) {
@@ -17,7 +19,11 @@ class RestartButton extends Sprite {
     }
 
     getClick() {
-        new FullScreenMessage(this.text, 6000, this.restart.bind(this))
+        new FullScreenMessage(
+            new Text({ text: this.text, style: textStyles.message }),
+            6000,
+            this.restart.bind(this)
+        )
     }
 
     restart() {

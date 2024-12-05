@@ -4,6 +4,18 @@ import { music, voices } from './loader'
 let isSoundOn = true
 let isStartFromRandomMusic = true
 
+export function soundTurnOn() {
+    isSoundOn = true
+    isMusicOn = true
+}
+export function soundTurnOff() {
+    isSoundOn = false
+    isMusicOn = false
+}
+export function soundGetState() {
+    return isSoundOn
+}
+
 const voicesSet = new Set()
 let voiceInstance = null
 export function playVoice( vs ) {
@@ -38,6 +50,7 @@ export function playSound( se ) {
 let bgMusicList = null
 let bgMusicIndex = 0
 let bgMusic = null
+let isMusicOn = true
 
 export function stopMusic() {
     if (!bgMusic) return
@@ -45,6 +58,8 @@ export function stopMusic() {
 }
 
 export function playMusic() {
+    if (!isMusicOn) return
+
     if (bgMusic) return bgMusic.isPlaying ? null : bgMusic.resume()
 
     if (!bgMusicList) bgMusicList = Object.values(music)

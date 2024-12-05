@@ -7,7 +7,14 @@ import { controlSizeH, controlSizeV, controlHeightH, controlHeightV,
     imageSnowWidth, imageSnowHeight, mapRate, mapMaxScreenHeightRate } from "../constants"
 
 const minBright = 0.2
-const brightStep = 0.0003
+const brightStep = 0.0004
+
+/*
+const frames = 120
+const ms = (frames / 60) * 1000
+const minBright = 0.2
+console.log('brightStep = ', (1 - minBright) / ms)
+*/
 
 class Terrain extends Container {
     constructor( screenData ) {
