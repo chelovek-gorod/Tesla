@@ -1,0 +1,67 @@
+{
+	"frames": {
+		"energy": {
+			"frame": {
+				"x": 0,
+				"y": 0,
+				"w": 320,
+				"h": 320
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 320,
+				"h": 320
+			},
+			"sourceSize": {
+				"w": 320,
+				"h": 320
+			},
+			"anchor": {
+				"x": 0.5,
+				"y": 0.5
+			}
+		},
+		"time": {
+			"frame": {
+				"x": 320,
+				"y": 0,
+				"w": 320,
+				"h": 320
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 320,
+				"h": 320
+			},
+			"sourceSize": {
+				"w": 320,
+				"h": 320
+			},
+			"anchor": {
+				"x": 0.5,
+				"y": 0.5
+			}
+		}
+	},
+	"animations": {
+		"go": [
+			"0",
+			"1"
+		]
+	},
+	"meta": {
+		"image": "ad_bonus_320x320px_2x1_2frames.png",
+		"format": "RGBA8888",
+		"size": {
+			"w": 640,
+			"h": 320
+		},
+		"scale": "1"
+	}
+}

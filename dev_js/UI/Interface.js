@@ -101,7 +101,7 @@ class Interface extends Container {
         this.addChild(this.textScore)
 
         // AD
-        this.adButton = new AdButton(disabledVoice)
+        this.adButton = new AdButton(disabledVoice, state, isLangRu)
         this.addChild(this.adButton)
 
         // Restart

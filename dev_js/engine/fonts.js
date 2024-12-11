@@ -70,13 +70,41 @@ export function initFontStyles() {
 
         mobileMessage: new TextStyle({
             fontFamily: fonts.normal,
-            fontSize: 24,
+            fontSize: 32,
             fill: '#ff0000',
             align: 'center',
 
             dropShadow: true,
             dropShadowColor: '#000000',
             dropShadowBlur: 4,
+            dropShadowAngle: 0,
+            dropShadowDistance: 0,
+        }),
+
+        adResultMessage: new TextStyle({
+            fontFamily: fonts.normal,
+            fontSize: 24,
+            fill: '#000000',
+            align: 'center',
+
+            dropShadow: true,
+            dropShadowColor: '#00ff00',
+            dropShadowBlur: 6,
+            dropShadowAngle: 0,
+            dropShadowDistance: 0,
+
+            wordWrap: true,
+            wordWrapWidth: 300,
+        }),
+        adResultButton: new TextStyle({
+            fontFamily: fonts.normal,
+            fontSize: 24,
+            fill: '#ffffff',
+            align: 'center',
+
+            dropShadow: true,
+            dropShadowColor: '#000000',
+            dropShadowBlur: 6,
             dropShadowAngle: 0,
             dropShadowDistance: 0,
         }),
