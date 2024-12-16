@@ -233,7 +233,7 @@
     ]
 },
 "meta": {
-    "image": "smoke_192x192px_25frames.png",
+    "image": "smoke_192x192px_25frames.webp",
     "format": "RGBA8888",
     "size": {"w":960,"h":960},
     "scale": "1"

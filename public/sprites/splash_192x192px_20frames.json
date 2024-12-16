@@ -187,7 +187,7 @@
     ]
 },
 "meta": {
-    "image": "splash_192x192px_20frames.png",
+    "image": "splash_192x192px_20frames.webp",
     "format": "RGBA8888",
     "size": {"w":960,"h":1152},
     "scale": "1"

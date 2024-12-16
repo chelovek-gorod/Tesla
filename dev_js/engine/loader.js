@@ -10,25 +10,25 @@ const paths = {
 }
 
 export const sprites = {
-    marsGameLogo: 'mars_game_456x137px.png',
+    finger: 'finger_220x220px.webp',
 
-    finger: 'finger_220x220px.png',
+    night_sky: 'night_sky_400x400px.webp',
+    moon: 'moon_212x212px.webp',
+    snow_bg: 'snow_bg_2048x920.webp',
 
-    night_sky: 'night_sky_400x400px.png',
-    moon: 'moon_212x212px.png',
-    snow_bg: 'snow_bg_2048x920.png',
-
+    close_button: 'close_button_280x202px.webp',
+    ad_screens: 'ad_screens_360x480px_3x1_3frames.json',
     ad_button: 'ad_button_84x144px_2x1_2frames.json',
-    restart_button: 'restart_button_84x124px.png',
-    top_screen: 'top_screen_672x126px.png',
+    restart_button: 'restart_button_84x124px.webp',
+    top_screen: 'top_screen_672x126px.webp',
     main_button: 'main_button_178x168px_1x2_2frames.json',
     panel: 'panel_394x164px_1x2_2frames.json',
-    level_panel: 'level_panel_188x236px.png',
+    level_panel: 'level_panel_188x236px.webp',
     turbo_switch: 'turbo_switch_192x302px_3x3_9frames.json',
-    wires_angle: 'wires_angle_160x160px.png',
-    wires_line: 'wires_line_160x160px.png',
+    wires_angle: 'wires_angle_160x160px.webp',
+    wires_line: 'wires_line_160x160px.webp',
 
-    building_box: 'building_box_182x160px.png',
+    building_box: 'building_box_182x160px.webp',
     tesla_tower: 'tesla_tower_214x476px_9x7_61frames.json',
     lightning_tower: 'lightning_tower_204x490px_2x1_2frames.json',
     rotor_generator: 'rotor_generator_168x200px_4x4_16frames.json',
@@ -38,10 +38,10 @@ export const sprites = {
     time_machine_lamps: 'time_machine_lamps_98x84px_1x7_7frames.json',
     time_machine_progress: 'time_machine_progress_98x84px_4x8_32frames.json',
         
-    broken_car: 'broken_car_250x166px.png',
-    truck: 'truck_364x264px.png',
-    euro_cube: 'euro_cube_152x260px.png',
-    transformer: 'transformer_162x364px.png',
+    broken_car: 'broken_car_250x166px.webp',
+    truck: 'truck_364x264px.webp',
+    euro_cube: 'euro_cube_152x260px.webp',
+    transformer: 'transformer_162x364px.webp',
 
     spy_bot: 'spy_bot_154x114px_7x8_56_frames.json',
     
@@ -50,7 +50,6 @@ export const sprites = {
     sparks: 'splash_192x192px_20frames.json',
     explosion: 'explosion_192x192px_5x5_25frames.json',
     ball_lightning: 'ball_lightning_156x156px_4x3_12frames.json',
-    ad_bonus: 'ad_bonus_320x320px_2x1_2frames.json', //frameNames: 'energy', 'time'
 }
 const spritesNumber = Object.keys(sprites).length
 for (let sprite in sprites) sprites[sprite] = paths.sprites + sprites[sprite]

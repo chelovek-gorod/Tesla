@@ -36,8 +36,6 @@ class State {
     constructor(save = null, isLangRu) {
         this.help = new Set( save ? save.help : ['button', 'auto', 'click', 'turbo', 'boost', 'spy'] )
 
-        this.isADBonusTurboSeconds = false
-
         this.points = save ? BigInt(save.points) : 0n
         this.addRate = 1n // x turbo in TURBO UES
 
@@ -178,14 +176,8 @@ class State {
         this.updateTurboLightnings()
     }
 
-    showAD() {
-        if (this.isADBonusTurboSeconds) {
-            this.turboSeconds += 0.5
-            this.turboTimeout = this.turboSeconds
-            // updateUITurboTimeout( true )
-
-            getADBonusUI( 0 )
-        } else {
+    showAD(isEnergyAdd) {
+        if (isEnergyAdd) {
             const bonus = (this.addPerClickPrice + this.addPerSecondPrice + this.turboPrice) / 6n
             this.points += bonus
         
@@ -194,8 +186,13 @@ class State {
 
             // updateUIPoints( bonus )
             getADBonusUI( bonus )
+        } else {
+            this.turboSeconds += 0.5
+            this.turboTimeout = this.turboSeconds
+            // updateUITurboTimeout( true )
+
+            getADBonusUI( 0 )
         }
-        this.isADBonusTurboSeconds = !this.isADBonusTurboSeconds
     }
 
     increaseValue(value, counter) {

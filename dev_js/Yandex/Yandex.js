@@ -2,7 +2,7 @@ import { startTicker, stopTicker } from "../engine/application"
 import { playMusic, soundGetState, soundTurnOff, soundTurnOn, stopMusic, stopVoices } from "../engine/sound"
 import { encode, decode } from './decoder'
 
-const isRealYandex = false
+const isRealYandex = true
 const leaderboardName = 'TeslaLeaderboard' // string or null
 
 // save max 100 requests per 5 minutes => 1 in 3 seconds

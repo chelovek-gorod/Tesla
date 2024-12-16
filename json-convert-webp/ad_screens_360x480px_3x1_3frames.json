@@ -1,0 +1,92 @@
+{
+	"frames": {
+		"0": {
+			"frame": {
+				"x": 0,
+				"y": 0,
+				"w": 360,
+				"h": 480
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 360,
+				"h": 480
+			},
+			"sourceSize": {
+				"w": 360,
+				"h": 480
+			},
+			"anchor": {
+				"x": 0.5,
+				"y": 0.5
+			}
+		},
+		"1": {
+			"frame": {
+				"x": 360,
+				"y": 0,
+				"w": 360,
+				"h": 480
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 360,
+				"h": 480
+			},
+			"sourceSize": {
+				"w": 360,
+				"h": 480
+			},
+			"anchor": {
+				"x": 0.5,
+				"y": 0.5
+			}
+		},
+		"2": {
+			"frame": {
+				"x": 720,
+				"y": 0,
+				"w": 360,
+				"h": 480
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 360,
+				"h": 480
+			},
+			"sourceSize": {
+				"w": 360,
+				"h": 480
+			},
+			"anchor": {
+				"x": 0.5,
+				"y": 0.5
+			}
+		}
+	},
+	"animations": {
+		"go": [
+			"0",
+			"1",
+			"2"
+		]
+	},
+	"meta": {
+		"image": "ad_screens_360x480px_3x1_3frames.webp",
+		"format": "RGBA8888",
+		"size": {
+			"w": 1080,
+			"h": 480
+		},
+		"scale": "1"
+	}
+}

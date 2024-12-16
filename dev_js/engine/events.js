@@ -61,8 +61,8 @@ export function setAutoCharge() {
 export function setTurboCharge() {
     EventHub.emit( events.setTurboCharge )
 }
-export function requestAD() {
-    EventHub.emit( events.requestAD )
+export function requestAD(isEnergyAdd) {
+    EventHub.emit( events.requestAD, isEnergyAdd )
 }
 export function requestUpgradeClick() {
     EventHub.emit( events.requestUpgradeClick )

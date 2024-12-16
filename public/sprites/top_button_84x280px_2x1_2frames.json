@@ -53,7 +53,7 @@
 		"go": [ "off", "on" ]
 	},
 	"meta": {
-		"image": "top_button_84x280px_2x1_2frames.png",
+		"image": "top_button_84x280px_2x1_2frames.webp",
 		"format": "RGBA8888",
 		"size": {
 			"w": 168,

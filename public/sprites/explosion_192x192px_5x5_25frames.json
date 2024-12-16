@@ -631,7 +631,7 @@
 		]
 	},
 	"meta": {
-		"image": "explosion_192x192px_5x5_25frames.png",
+		"image": "explosion_192x192px_5x5_25frames.webp",
 		"format": "RGBA8888",
 		"size": {
 			"w": 960,

@@ -225,7 +225,7 @@
         "idle": ["1"]
 	},
 	"meta": {
-		"image": "turbo_switch_192x302px_3x3_9frames.png",
+		"image": "turbo_switch_192x302px_3x3_9frames.webp",
 		"format": "RGBA8888",
 		"size": {
 			"w": 576,
